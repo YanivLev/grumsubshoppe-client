@@ -1,166 +1,3 @@
-// "use client";
-
-// import logo from "../icons/GrumsLogo.svg";
-// import { useState } from "react";
-
-// function Header() {
-//   const [isFocused, setIsFocused] = useState(false);
-//   return (
-//     <div className="w-full h-full absolute
-//     bg-gradient-to-r from-blue-400 to-emerald-400">
-//       <header className=" grid grid-cols-[1fr_auto_1fr] items-center
-//           text-black py-2 px-8 md:px-32 bg-white drop-shadow-md"> 
-     
-//         <div className="min-w-0">
-//           <ul className="hidden xl:flex items-center
-//           gap- font-semibold text-base">
-//             <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition-all cursor-pointer hover:scale-115 transition-all">Homes</li>
-//             <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition-all cursor-pointer hover:scale-115 transition-all">About</li>
-//             <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition-all cursor-pointer hover:scale-115 transition-all">Contact</li>
-//             <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition-all cursor-pointer hover:scale-115 transition-all">Explore</li>
-//           </ul>
-//         </div>
-
-//         <div className="justify-self-center">
-//           <a href="#">
-//             <img src={logo.src} alt="" className="h-25 w-52 hover:scale-105 transition-all "/>
-//           </a>
-//         </div>
-//         {/* <div className="relative hidden md:flex
-//         items-center justify-center gap-3">
-//           <i className="bx bx-search absolute left-3 text-2xl text-gray-500"></i>
-//           <input type="text" placeholder="Search" className="py-2 pl-10 rounded-xl border-2
-//           border-blue-300 focus:bg-slate-100 focus:outline-sky-500 "/>
-//         </div> */}
-//        <div className="justify-self-end min-w-0">
-//           <div className="relative hidden md:flex items-center">
-//             <i className="bx bx-search absolute left-3 text-2xl text-gray-500 pointer-events-none"></i>
-//             <input
-//               type="text"
-//               placeholder="Search"
-//               onFocus={() => setIsFocused(true)}
-//               onBlur={() => setIsFocused(false)}
-//               className={`
-//                 w-40 ${isFocused ? "md:w-64" : "md:w-40"}
-//                 transition-all duration-300
-//                 py-2 pl-10 rounded-xl border-2 border-blue-300
-//                 focus:bg-slate-100 focus:outline-sky-500
-//               `}
-//             />
-//           </div>
-//         </div>
-//         <div className="justify-self-end min-w-0 relative hidden md:flex items-center">
-//           <i className="bx bx-menu xl:hidden "/>
-//         </div>
-//       </header>
-//     </div>
-//   );
-// }
-// export default Header;
-
-// ***********************************************************************************************
-// "use client";
-
-// import logo from "../icons/GrumsLogo.svg";
-// import { useState } from "react";
-
-// function Header() {
-//   const [isFocused, setIsFocused] = useState(false);
-//   const [mobileOpen, setMobileOpen] = useState(false);
-
-//   return (
-//     <div className="w-full bg-gradient-to-r from-blue-400 to-emerald-400">
-//       <header className="bg-white drop-shadow-md text-black">
-
-//         {/* MOBILE/TABLET BAR (logo left, hamburger right) */}
-//         <div className="flex lg:hidden items-center justify-between px-4 py-2 ">
-//           <a href="#" className="shrink-1">
-//             <img src={logo.src} alt="Grum's Subshoppe" className="h-20 w-auto " />
-//           </a>
-//           <button
-//             aria-label="Toggle menu"
-//             onClick={() => setMobileOpen((s) => !s)}
-//             className="p-2 rounded-lg  border content-end border-blue-300 active:scale-95"
-//           >
-//             <i className={`bx ${mobileOpen ? "bx-x" : "bx-menu"} text-4xl`} />
-//           </button>
-//         </div>
-
-//         {/* MOBILE MENU PANEL */}
-//         <div
-//           className={`lg:hidden overflow-hidden transition-[max-height] duration-300 ${
-//             mobileOpen ? "max-h-96" : "max-h-0"
-//           }`}
-//         >
-//           <nav className="px-4 pb-4">
-//             <ul className="flex flex-col gap-2 font-semibold">
-//               <li className="p-3 rounded-md hover:bg-sky-100 active:bg-sky-200">Home</li>
-//               <li className="p-3 rounded-md hover:bg-sky-100 active:bg-sky-200">About</li>
-//               <li className="p-3 rounded-md hover:bg-sky-100 active:bg-sky-200">Contact</li>
-//               <li className="p-3 rounded-md hover:bg-sky-100 active:bg-sky-200">Explore</li>
-//               {/* Optional mobile search */}
-//               <li className="mt-2">
-//                 <div className="relative">
-//                   <i className="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-xl text-gray-500 pointer-events-none" />
-//                   <input
-//                     type="text"
-//                     placeholder="Search"
-//                     className="w-full py-2 pl-10 rounded-xl border-2 border-blue-300 focus:bg-slate-100 focus:outline-sky-500"
-//                   />
-//                 </div>
-//               </li>
-//             </ul>
-//           </nav>
-//         </div>
-
-//         {/* DESKTOP BAR (lg+): grid with logo centered */}
-//         <div className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center px-10 lg:px-16 py-2">
-//           {/* LEFT — (optional) nav (only show at xl+) */}
-//           <nav className="hidden xl:flex justify-start">
-//             <ul className="flex items-center gap-10 font-semibold text-bas">
-//               <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition hover:scale-110 cursor-pointer">Home</li>
-//               <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition hover:scale-110 cursor-pointer">About</li>
-//               <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition hover:scale-110 cursor-pointer">Contact</li>
-//               <li className="p-3 hover:bg-sky-400 hover:text-white rounded-md transition hover:scale-110 cursor-pointer">Explore</li>
-//             </ul>
-//           </nav>
-
-//           {/* CENTER — logo (truly centered on desktop) */}
-//           <a href="#" className="justify-self-center shrink-0 ">
-//             <img src={logo.src} alt="Grum's Subshoppe" className="h-22 w-auto hover:scale-105 transition" />
-//           </a>
-
-//           {/* RIGHT — search (reserved width so it won’t push layout) */}
-//           <div className="justify-self-end min-w-0">
-//             <div className="relative hidden lg:flex items-center w-[14rem] xl:w-[18rem]">
-//               <i className="bx bx-search absolute left-3 text-2xl text-gray-500 pointer-events-none" />
-//               <input
-//                 type="text"
-//                 placeholder="Search"
-//                 onFocus={() => setIsFocused(true)}
-//                 onBlur={() => setIsFocused(false)}
-//                 className={[
-//                   // collapsed width
-//                   "w-[10rem] xl:w-[12rem]",
-//                   // expand on focus within reserved wrapper
-//                   isFocused ? "lg:w-[14rem] xl:w-[18rem]" : "",
-//                   // visuals
-//                   "transition-all duration-300 py-2 pl-10 rounded-xl border-2 border-blue-300",
-//                   "focus:bg-slate-100 focus:outline-sky-500",
-//                 ].join(" ")}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default Header;
-
-// ***********************************************************************************************
-
 "use client";
 
 import Image from "next/image";
@@ -215,22 +52,24 @@ export default function Header() {
             <div className="h-fit flex items-center">
               <Link
                 href="https://maps.app.goo.gl/qeSogw7jGB7Jp6QV7"
-                className={`flex items-center text-lg tracking-[-0.02em] ${openSans.className} font-medium hover:text-green-800 transition-all`}
+                className={`flex items-center text-lg tracking-[-0.01em] ${ibmPlex.className} font-medium hover:text-green-800 transition-all`}
               >
                  <i className="bx bx-map text-2xl" aria-hidden="true" />
-                Find Us
+                <div className="relative hover:underline ">
+                  Find Us
+                </div>
               </Link>
               <div className="flex items-center gap-8 pl-4">
                 <div className="h-8 border-l border-gray-400"></div>
                   <Link
                   href="/menu"
-                  className={` hover:text-green-800 text-lg tracking-[-0.02em] ${openSans.className} font-semibold`}
+                  className={` hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
                   >
                   Menu
                   </Link>
                   <Link
                   href="/about"
-                  className={` hover:text-green-800 text-lg tracking-[-0.02em] ${openSans.className} font-semibold`}
+                  className={` hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
                   >
                   About
                   </Link>
@@ -321,21 +160,21 @@ export default function Header() {
 
             {/* RIGHT: Order Now stacked text */}
             {/* RIGHT: Order / Now + Call (mobile only) */}
-            <div className="justify-self-end flex items-center gap-3 pr-2">
+            <div className="justify-self-end flex items-center gap-5 pr-2">
               {/* stacked Order / Now, centered together */}
-              <div className="flex flex-col items-center leading-[1]">
-                <Link href="/order" className="block m-0 p-0 text-green-600 font-semibold text-sm">Order</Link>
-                <Link href="/order" className="block m-0 p-0 -mt-0.5 text-green-600 font-semibold text-sm">Now</Link>
-              </div>
-
               {/* Call button (phone icon) */}
               <a
                 href="tel:+12163214781"             
                 aria-label="Call Grum’s"
-                className="grid h-9 w-9 place-items-center rounded-full border border-grey-200 hover:bg-green-50 active:scale-95 transition"
+                className="grid h-10 w-10 place-items-center rounded-full border-1 border-grey-200 hover:bg-green-50 active:scale-95 transition"
               >
-                <i className="bx bx-phone text-green-600 text-xl" aria-hidden="true" />
+                <i className="bx bx-phone-call text-green-700 text-2xl" aria-hidden="true" />
               </a>
+
+              <div className="flex flex-col items-center leading-[1]">
+                <Link href="/order" className="block m-0 p-0 text-green-700 font-semibold text-base">Order</Link>
+                <Link href="/order" className="block m-0 p-0 -mt-0.5 text-green-700 font-semibold text-base">Now</Link>
+              </div>
             </div>
           </div>
         </div>
