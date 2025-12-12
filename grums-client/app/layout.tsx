@@ -6,20 +6,11 @@ import { ThemeProvider } from "@mui/material/styles";
 import lightTheme from "./light.theme";
 import { CssBaseline } from "@mui/material";
 import Container from "@mui/material/Container";
-import Header from "./components/layout/header";
+import Navbar from "./components/layout/navbar";
 import { Roboto_Slab } from "next/font/google";
 
 //Fonts
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 
 // Metadata
@@ -42,14 +33,12 @@ export default function RootLayout({
         />
       </head>
 
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body>
       <AppRouterCacheProvider>
         <ThemeProvider theme={lightTheme}>
           
           <CssBaseline />
-          <Header />
+          <Navbar/>
           <Container>
             {children}
           </Container>

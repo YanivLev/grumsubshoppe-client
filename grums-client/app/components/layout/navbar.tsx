@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from 'next/link';
 import { useEffect, useRef, useState } from "react";
 import logo from "../icons/GrumsLogo.svg";
 import { Open_Sans,Montserrat ,Roboto, Roboto_Slab, IBM_Plex_Sans } from "next/font/google";
@@ -22,7 +22,7 @@ const ibmPlex = IBM_Plex_Sans({
   weight: ["400", "500", "600", "700"], // pick weights you
 });
 
-export default function Header() {
+export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,9 +40,10 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white shadow-sm outline-2 outline-dashed outline-gray-400/50">
+      <header className="sticky top-0 z-40 w-full bg-white shadow-mdx">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-4 lg:px-8">
 
           {/* ===== DESKTOP / LAPTOP ===== */}
@@ -50,26 +51,26 @@ export default function Header() {
 
             {/* LEFT: Find Us */}
             <div className="h-fit flex items-center">
-              <Link
-                href="https://maps.app.goo.gl/qeSogw7jGB7Jp6QV7"
-                className={`flex items-center text-lg tracking-[-0.01em] ${ibmPlex.className} font-medium hover:text-green-800 transition-all`}
+              <button
+                onClick={() => window.open('https://maps.app.goo.gl/qeSogw7jGB7Jp6QV7')}
+                className={`flex cursor-pointer items-center text-lg tracking-[-0.01em] ${ibmPlex.className} font-medium hover:text-green-800 transition-all`}
               >
-                 <i className="bx bx-map text-2xl" aria-hidden="true" />
-                <div className="relative hover:underline ">
+                 <i className="text-green-900 bx bx-map text-2xl" aria-hidden="true" />
+                <div className="text-green-900 relative hover:underline ">
                   Find Us
                 </div>
-              </Link>
+              </button>
               <div className="flex items-center gap-8 pl-4">
                 <div className="h-8 border-l border-gray-400"></div>
                   <Link
                   href="/menu"
-                  className={` hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
+                  className={`text-black hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
                   >
                   Menu
                   </Link>
                   <Link
                   href="/about"
-                  className={` hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
+                  className={`text-black hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}
                   >
                   About
                   </Link>
@@ -78,9 +79,9 @@ export default function Header() {
 
             {/* CENTER: Single logo circle overlapping the seam */}
             <div className="relative grid place-items-center ">
-            <a href="/" aria-label="Go home">
-              <img src={logo.src} alt="" className="h-25 w-34 hover:scale-105 transition-all "/>
-            </a>
+              <Link href="/" aria-label="Go home">
+                <img src={logo.src} alt="" className="h-25 w-34 hover:scale-105 transition-all "/>
+              </Link>
             </div>
 
             {/* RIGHT: search + order (no overlap) */}
@@ -89,7 +90,7 @@ export default function Header() {
               {!searchOpen && (
                 <button
                   aria-label="Open search"
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
+                  className="text-black grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
                   onClick={() => setSearchOpen(true)}
                 >
                   <i className="bx bx-search text-[20px]" />
@@ -127,7 +128,7 @@ export default function Header() {
 
               <Link
                 href="/order"
-                className="border-3 broder-green-600 shrink-0 inline-flex items-center justify-center rounded-full px-6 h-10 font-semibold  text-white bg-gradient-to-t from-green-700 to-green-500 hover:from-green-700 transition-all hover:to-green-800 shadow "
+                className="border-3 broder-green-600 shrink-0 inline-flex items-center justify-center rounded-full px-6 h-10 font-semibold  text-white bg-gradient-to-t from-green-700 to-green-500 hover:from-green-700 transition-all hover:to-green-800 shadow focus:outline-offset-2 focus:outline-green-500"
               >
                 Order Now
               </Link>
@@ -141,10 +142,10 @@ export default function Header() {
               className="grid place-items-center h-10 w-10 rounded-md"
               onClick={() => setMenuOpen(v => !v)}
             >
-              <i className={`bx ${menuOpen ? "bx-x" : "bx-menu"} text-3xl hover: cursor-pointer`} />
+              <i className={`bx ${menuOpen ? "bx-x" : "bx-menu"} text-black text-3xl hover: cursor-pointer`} />
             </button>
-
-            {/* bigger plain logo on mobile (no dent) */}
+          
+       
             <div className="grid place-items-center">
               <Link href="/" aria-label="Go home">
                 <Image
@@ -163,13 +164,15 @@ export default function Header() {
             <div className="justify-self-end flex items-center gap-5 pr-2">
               {/* stacked Order / Now, centered together */}
               {/* Call button (phone icon) */}
-              <a
-                href="tel:+12163214781"             
+          
+              <button
+                className="grid h-10 w-10 place-items-center rounded-full border border-gray-500 hover:bg-green-50 active:scale-95 transition"
+                onClick={() => window.open('tel:+12163214781')}
                 aria-label="Call Grum’s"
-                className="grid h-10 w-10 place-items-center rounded-full border-1 border-grey-200 hover:bg-green-50 active:scale-95 transition"
+                
               >
                 <i className="bx bx-phone-call text-green-700 text-2xl" aria-hidden="true" />
-              </a>
+              </button>  
 
               <div className="flex flex-col items-center leading-[1]">
                 <Link href="/order" className="block m-0 p-0 text-green-700 font-semibold text-base">Order</Link>
@@ -182,7 +185,7 @@ export default function Header() {
 
       {/* ===== MOBILE/TABLET DRAWER ===== */}
       <div
-        className={`sm:hidden fixed inset-x-0 top-20 z-30 origin-top bg-white transition-all duration-200 ${
+        className={`tablet:hidden fixed inset-x-0 top-20 z-30 origin-top bg-white transition-all duration-200 ${
           menuOpen ? "scale-y-100 opacity-100" : "pointer-events-none scale-y-95 opacity-0"
         } border-t border-gray-200 shadow-lg`}
       >
@@ -190,11 +193,13 @@ export default function Header() {
           <div className="relative">
             <i className="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-lg text-gray-500" />
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Try: Nutrition and allergens"
               className="w-full h-12 rounded-full border border-gray-300 bg-white pl-10 pr-12 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500/40"
             />
             <button
+              onClick={() => { if (searchInputRef.current!=null) searchInputRef.current.value = ""; }}
               aria-label="Clear search"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
             >
@@ -226,3 +231,6 @@ export default function Header() {
     </>
   );
 }
+
+
+
