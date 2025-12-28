@@ -147,10 +147,10 @@ export default function Navbar() {
           
        
             <div className="grid place-items-center">
-              <Link href="/" aria-label="Go home">
+              <Link href="/" aria-label="Go Home">
                 <Image
                   src={logo}
-                  alt="Grums"
+                  alt="Grum's Home"
                   width={120}
                   height={120}
                   className="object-contain"
@@ -196,7 +196,7 @@ export default function Navbar() {
               ref={searchInputRef}
               type="text"
               placeholder="Try: Nutrition and allergens"
-              className="w-full h-12 rounded-full border border-gray-300 bg-white pl-10 pr-12 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500/40"
+              className="w-full h-12 rounded-full border border-gray-300 text-black bg-white pl-10 pr-12 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-100"
             />
             <button
               onClick={() => { if (searchInputRef.current!=null) searchInputRef.current.value = ""; }}
@@ -207,13 +207,13 @@ export default function Navbar() {
             </button>
           </div>
 
-          <nav className="grid gap-4 text-2xl font-medium text-red-700">
+          <nav className="grid gap-4 text-2xl font-medium text-black">
             <Link href="/menu" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
               Menu <i className="bx bx-chevron-right text-xl" />
             </Link>
             <Link href="/locations" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
-              <i className="bx bx-map-pin text-xl" />
               Find Us
+              <i className="bx bx-map-pin text-xl" />
             </Link>
           </nav>
 
@@ -221,7 +221,7 @@ export default function Navbar() {
             <Link
               href="/order"
               onClick={() => setMenuOpen(false)}
-              className="inline-flex items-center justify-center rounded-full px-6 h-11 font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 shadow"
+              className="inline-flex items-center justify-center rounded-full px-6 h-11 font-semibold text-white bg-gradient-to-r from-green-600 to-green-500 shadow"
             >
               Order now
             </Link>
@@ -231,6 +231,3 @@ export default function Navbar() {
     </>
   );
 }
-
-
-

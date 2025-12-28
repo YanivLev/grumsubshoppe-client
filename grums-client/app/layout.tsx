@@ -6,12 +6,9 @@ import { ThemeProvider } from "@mui/material/styles";
 import lightTheme from "./light.theme";
 import { CssBaseline } from "@mui/material";
 import Container from "@mui/material/Container";
-import Navbar from "./components/layout/navbar";
+import Navbar from "./components/header/navbar";
 import { Roboto_Slab } from "next/font/google";
-
-//Fonts
-
-
+import Items from "./components/items/menu";
 
 // Metadata
 export const metadata: Metadata = {
@@ -33,7 +30,7 @@ export default function RootLayout({
         />
       </head>
 
-      <body>
+    <body>
       <AppRouterCacheProvider>
         <ThemeProvider theme={lightTheme}>
           
@@ -44,7 +41,7 @@ export default function RootLayout({
           </Container>
         </ThemeProvider>
       </AppRouterCacheProvider>
-      </body>
+    </body> 
     </html>
   );
 }
