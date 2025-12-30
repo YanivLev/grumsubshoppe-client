@@ -30,18 +30,18 @@ export default function RootLayout({
         />
       </head>
 
-    <body>
-      <AppRouterCacheProvider>
-        <ThemeProvider theme={lightTheme}>
-          
-          <CssBaseline />
-          <Navbar/>
-          <Container>
-            {children}
-          </Container>
-        </ThemeProvider>
-      </AppRouterCacheProvider>
-    </body> 
+      <body>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={lightTheme}>
+            
+            <CssBaseline />
+            <Navbar/>
+            <Container>
+              {children}
+            </Container>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </body> 
     </html>
   );
 }
