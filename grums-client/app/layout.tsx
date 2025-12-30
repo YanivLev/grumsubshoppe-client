@@ -8,7 +8,7 @@ import { CssBaseline } from "@mui/material";
 import Container from "@mui/material/Container";
 import Navbar from "./components/header/navbar";
 import { Roboto_Slab } from "next/font/google";
-import Items from "./components/items/menu";
+import Items from "./components/menu/menu";
 
 // Metadata
 export const metadata: Metadata = {
