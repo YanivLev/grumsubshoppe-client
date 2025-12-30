@@ -11,7 +11,7 @@ interface ItemProps {
 export default function Item({item}: ItemProps) {
     return (
         
-<Box id="Box" className="bg-linear-to-t from-white to-gray-100 w-110 rounded-3xl h-24 justify-center text-center flex 
+<Box id="Box" className="bg-linear-to-t from-white to-gray-100 w-110 h-20 rounded-3xl h-24 justify-center text-center flex 
                 has-[button:hover]:shadow-2xl has-[button:hover]:-translate-y-2 has-[button:hover]:bg-green-50 transition-all duration-300 ease-in-out">
     
     <Stack direction="row" spacing={2} alignItems="center" className="w-full h-full px-2">
@@ -24,8 +24,10 @@ export default function Item({item}: ItemProps) {
             <Typography variant="h6" className="font-bold leading-tight">
                 {item.name}
             </Typography>
-            <Typography variant="body2" className="text-gray-500 line-clamp-1">
-                Fresh ingredients and signature sauce...
+            <Typography sx={{WebkitLineClamp: 2}} variant="body2" className="text-gray-500 line-clamp-1">
+                Mayo, Lettuce, Onions, Tomato, 
+                <br />
+                Turkey, Provolone, Spices
             </Typography>
         </div>
 
