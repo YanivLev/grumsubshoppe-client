@@ -1,12 +1,14 @@
 import Grid from '@mui/material/Grid';
 import getItems from "./actions/get-items";
+import getItemGroups from "./actions/get-item-groups";
 import Item from "./item-card";
 import MenuManager from "./category-selector";
 
 export default async function Items() {
     // Only one call to the backend
     const items = await getItems();
-
+    const itemGroups = await getItemGroups();
+    console.log("item Groups:", itemGroups);
     if (!items || items.length === 0) {
         return <p className="text-center py-10">No items available.</p>;
     }
@@ -39,7 +41,7 @@ return (
         </div>
 
         {/* Pass the server-fetched items to the dynamic manager */}
-        <MenuManager initialItems={items} />
+        <MenuManager initialItemGroups={itemGroups} />
         
     </section>
 );

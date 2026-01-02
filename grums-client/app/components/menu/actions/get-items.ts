@@ -1,7 +1,6 @@
 "use server";
 
 import {get} from "@/app/common/util/fetch";
-import {Item} from "../interfaces/item.interface";
 
 export default async function getItems() {
     try {
@@ -14,3 +13,5 @@ export default async function getItems() {
       return [];
     }
   }
+
+

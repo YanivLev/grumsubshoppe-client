@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import { Item as IItem } from "./interfaces/item.interface";
+import {ItemGroup as IItemGroup} from "./interfaces/item-group.interface";
 import rightArrow from "../icons/RightArrow.svg";
 import Box from "@mui/material/Box";
 import { Stack } from "@mui/material";
@@ -10,8 +11,12 @@ interface ItemProps {
     item: IItem;
 }
 
-export default function Item({ item }: ItemProps) {
-    const slug = item.name.toLowerCase().replace(/ /g, '-');
+interface ItemGroupProps {
+    itemGroup: IItemGroup;
+}   
+
+export default function Item({ itemGroup }: ItemGroupProps) {
+    const slug = itemGroup.name.toLowerCase().replace(/ /g, '-');
 
     return (
         /* - Changed 'w-110' to 'w-full' for mobile, and 'md:w-110' for desktop.
@@ -31,7 +36,7 @@ export default function Item({ item }: ItemProps) {
 
                 <div className="text-left flex-grow overflow-hidden">
                     <Typography variant="h6" className="font-bold leading-tight md:text-xl truncate">
-                        {item.name}
+                        {itemGroup.name}
                     </Typography>
 
                     {/* Need to add actual description for each sub */}
@@ -43,12 +48,13 @@ export default function Item({ item }: ItemProps) {
                 </div>
 
                 <div className="flex-shrink-1">
-                    <Link href={`/${slug}`} className="block">
                         {/* Larger tap target (p-2) for thumb-friendliness */}
                         <button className="flex cursor-pointer items-center justify-center hover:scale-110 md:hover:scale-125 transition-transform duration-300 p-2">
-                            <AddCircleIcon fontSize="large"/> 
+                            <Link href={`/${slug}`} className="block">
+                                <AddCircleIcon fontSize="large"/> 
+                            </Link>
                         </button>
-                    </Link>
+
                 </div>   
             </Stack>
         </Box>   

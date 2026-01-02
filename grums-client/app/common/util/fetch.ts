@@ -38,3 +38,14 @@ export const get = async (path: string) => {
     const data = await res.json(); 
     return data;
 };
+
+export const getById = async (path: string, id: string) => {
+    const headers = await getHeaders();
+    const BASE_URL = process.env.API_URL;
+    const res = await fetch(`${BASE_URL}/${path.replace(/^\//, '')}`, { headers });
+    if (!res.ok) {
+        throw new Error(`Error: ${res.status}`);
+    }
+    const data = await res.json();
+    return data;
+};

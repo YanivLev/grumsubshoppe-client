@@ -8,55 +8,39 @@ import { List, Stack } from '@mui/material';
 // 1. Master Order: Define the sequence exactly as it appears in your Figma
 const categoryOrder = ["Cold Subs", "Hot Subs", "Salads", "Sides", "Specialties"];
 
-export default function MenuManager({ initialItems = [] }: { initialItems: any[] }) {
+export default function MenuManager({ initialItemGroups = [] }: { initialItemGroups: any[] }) {
   
-  // 2. Extract and Sort Categories
+  // Get category names from the item groups
   const categories = Array.from(
     new Set(
-      initialItems
-        ?.map((item) => item.categories?.elements?.[0]?.name || item.categories?.[0]?.name)
+      initialItemGroups
+        ?.map((group) => group.items?.elements?.[0]?.categories?.elements?.[0]?.name)
         .filter(Boolean)
     )
   ).sort((a, b) => {
-    // Look up the position of the category names in our Master Order list
     const indexA = categoryOrder.indexOf(a as string);
     const indexB = categoryOrder.indexOf(b as string);
-
-    // If a category from Clover isn't in our list, push it to the end
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-
-    // Mathematical comparison to determine order
-    return indexA - indexB;
+    return indexA === -1 ? 1 : indexB === -1 ? -1 : indexA - indexB;
   }) as string[];
 
-  // 3. Set the default active category to the first one in our sorted list
   const [activeCategory, setActiveCategory] = useState(categories[0] || "");
 
-  // 4. Filter logic to show only items matching the selected category
-  const filteredItems = initialItems.filter((item) => {
-    const itemCat = item.categories?.elements?.[0]?.name || item.categories?.[0]?.name;
-    return itemCat === activeCategory;
+  // Filter logic: Show the item group if its first item matches the category
+  const filteredGroups = initialItemGroups.filter((group) => {
+    const groupCat = group.items?.elements?.[0]?.categories?.elements?.[0]?.name;
+    return groupCat === activeCategory;
   });
-
-  // Safety check: if the API returned nothing, show an error message
-  if (!initialItems || initialItems.length === 0) {
-    return (
-      <div className="text-center p-10 border-2 border-dashed border-gray-200 rounded-xl">
-        <p className="text-gray-500 font-medium">No items found. Check API connection.</p>
-      </div>
-    );
-  }
 
   return (
     <div>
+      {/* Category Buttons */}
       <div className="flex flex-wrap justify-center gap-5 mb-10">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-6 py-2 rounded-full font-bold cursor-pointer transition-all transition duration-300 ease-in-out hover:scale-110 ${
-              activeCategory === cat ? "bg-green-600 text-white" : "bg-gray-100 text-gray-500 "
+            className={`px-6 py-2 rounded-full cursor-pointer font-bold hover:scale-105 duration-300 transition-all ${
+              activeCategory === cat ? "bg-green-600 text-white" : "bg-gray-100 text-gray-500"
             }`}
           >
             {cat}
@@ -64,15 +48,14 @@ export default function MenuManager({ initialItems = [] }: { initialItems: any[]
         ))}
       </div>
 
-    <div className="flex justify-center">
-      <Stack spacing={5}>
-        {filteredItems.map((item) => (
-            <div key={item.id}> {/* Adjust layout as needed */}
-              <Item item={item} />
-            </div>
+      {/* Map over Groups */}
+      <div className="flex justify-center">
+        <Stack spacing={4}>
+          {filteredGroups.map((group) => (
+            <Item key={group.id} itemGroup={group} /> 
           ))}
-      </Stack>
-    </div>
+        </Stack>
+      </div>
     </div>
   );
 }
