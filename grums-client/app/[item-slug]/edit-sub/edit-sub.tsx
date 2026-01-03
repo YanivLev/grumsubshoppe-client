@@ -1,0 +1,49 @@
+// app/[item-slug]/components/sub-customizer.tsx
+'use client';
+
+import { useState } from 'react';
+import SizeVariant from './size-variant';
+import {Item} from "@/app/components/menu/interfaces/item.interface";
+
+export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
+  const [activeItem, setActiveItem] = useState<Item | null>(null);
+  const [sumPrices, setSumPrices] = useState<number>(0);
+    console.log("activeitem",activeItem)
+  return (
+    console.log("variations",variations),
+    <div className="flex flex-col lg:flex-row gap-50">
+        
+      
+      {/* THE CART SIDEBAR */}
+      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fit shadow-md sticky top-10">
+        <h2 className="flex justify-center text-2xl font-bold mb-6">Your Cart</h2>
+        <div className="text-center bg-white mb-4 rounded-xl w-full">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
+            <span className="text-lg font-medium ">{activeItem?.name}</span>
+            <span className="text-lg font-bold">
+                {activeItem ? `${(activeItem.price/100).toFixed(2)}$` : "--.--"}
+            </span>
+            </div>
+        </div>
+        
+        <button 
+          disabled={!activeItem}
+          className="w-full mt-8 bg-black text-white py-4 rounded-full font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+        >
+          {activeItem ? "Add to Cart" : "Select a Size"}
+        </button>
+      </div>
+        
+      <div className="flex-grow">
+        {/* Your Size selection component */}
+        <SizeVariant 
+          variations={variations} 
+          selectedItemId={activeItem?.id} 
+          onSelect={(item) => setActiveItem(item)} 
+        />
+
+        {/* Space for Modifiers once a size is picked */}
+      </div>
+    </div>
+  );
+}

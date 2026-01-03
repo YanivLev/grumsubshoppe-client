@@ -50,7 +50,7 @@ export default function Item({ itemGroup }: ItemGroupProps) {
                 <div className="flex-shrink-1">
                         {/* Larger tap target (p-2) for thumb-friendliness */}
                         <button className="flex cursor-pointer items-center justify-center hover:scale-110 md:hover:scale-125 transition-transform duration-300 p-2">
-                            <Link href={`/${slug}`} className="block">
+                            <Link href={`/${slug}?id=${itemGroup.id}`} className="block">
                                 <AddCircleIcon fontSize="large"/> 
                             </Link>
                         </button>
