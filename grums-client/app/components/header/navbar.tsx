@@ -16,6 +16,7 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
 });
+
 const ibmPlex = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-IBM-Plex-Sans",
@@ -40,6 +41,7 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const [hovered, setHovered] = useState(false);
 
   return (
     <>

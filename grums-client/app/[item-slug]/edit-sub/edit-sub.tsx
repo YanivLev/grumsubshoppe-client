@@ -8,16 +8,14 @@ import {Item} from "@/app/components/menu/interfaces/item.interface";
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
   const [activeItem, setActiveItem] = useState<Item | null>(null);
   const [sumPrices, setSumPrices] = useState<number>(0);
-    console.log("activeitem",activeItem)
+
   return (
-    console.log("variations",variations),
     <div className="flex flex-col lg:flex-row gap-50">
-        
-      
+
       {/* THE CART SIDEBAR */}
-      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fit shadow-md sticky top-10">
+      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fIt shadow-md sticky top-10">
         <h2 className="flex justify-center text-2xl font-bold mb-6">Your Cart</h2>
-        <div className="text-center bg-white mb-4 rounded-xl w-full">
+        <div className="bg-white shadow-inner text-center mb-4 rounded-md w-full">
             <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
             <span className="text-lg font-medium ">{activeItem?.name}</span>
             <span className="text-lg font-bold">

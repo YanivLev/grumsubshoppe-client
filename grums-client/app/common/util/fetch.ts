@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { API_URL } from "../constants/api";
 import { getErrorMessage } from "../util/errors";
-
+import {cache} from "react";
 const getHeaders = async () => {
     const cookieStore = await cookies(); // Await the promise
     return {
@@ -33,8 +33,7 @@ export const get = async (path: string) => {
     if (!res.ok) {
         throw new Error(`Error: ${res.status}`);
     }
-
-    // CHANGE THIS: You must await the call to .json()
+    
     const data = await res.json(); 
     return data;
 };
