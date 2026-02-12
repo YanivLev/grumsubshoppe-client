@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from 'next/link';
+import IconButton from "@/app/components/atoms/IconButton";
 import { useEffect, useRef, useState } from "react";
 import logo from "../icons/GrumsLogo.svg";
 import { Open_Sans,Montserrat ,Roboto, Roboto_Slab, IBM_Plex_Sans } from "next/font/google";
@@ -90,13 +91,13 @@ export default function Navbar() {
             <div className="relative flex items-center justify-end gap-4 min-w-0">
              {/* search toggle icon (only shows when search is closed) */}
               {!searchOpen && (
-                <button
-                  aria-label="Open search"
-                  className="text-black grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gray-300 hover:bg-gray-50 cursor-pointer"
+                <IconButton
+                  ariaLabel="Open search"
                   onClick={() => setSearchOpen(true)}
+                  className="shrink-0 rounded-full border border-gray-300 hover:bg-gray-50"
                 >
                   <i className="bx bx-search text-[20px]" />
-                </button>
+                </IconButton>
               )}
 
               {/* expanding search pill */}
@@ -139,13 +140,13 @@ export default function Navbar() {
 
           {/* ===== MOBILE / TABLET ===== */}
           <div className="tablet:hidden grid grid-cols-3 items-center h-20">
-            <button
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="grid place-items-center h-10 w-10 rounded-md"
+            <IconButton
+              ariaLabel={menuOpen ? "Close menu" : "Open menu"}
               onClick={() => setMenuOpen(v => !v)}
+              className="rounded-md"
             >
-              <i className={`bx ${menuOpen ? "bx-x" : "bx-menu"} text-black text-3xl hover: cursor-pointer`} />
-            </button>
+              <i className={`bx ${menuOpen ? "bx-x" : "bx-menu"} text-black text-3xl`} />
+            </IconButton>
           
        
             <div className="grid place-items-center">
@@ -167,14 +168,13 @@ export default function Navbar() {
               {/* stacked Order / Now, centered together */}
               {/* Call button (phone icon) */}
           
-              <button
-                className="grid h-10 w-10 place-items-center rounded-full border border-gray-500 hover:bg-green-50 active:scale-95 transition"
+              <IconButton
+                ariaLabel="Call Grum's"
                 onClick={() => window.open('tel:+12163214781')}
-                aria-label="Call Grum’s"
-                
+                className="rounded-full border border-gray-500 hover:bg-green-50 active:scale-95 transition"
               >
                 <i className="bx bx-phone-call text-green-700 text-2xl" aria-hidden="true" />
-              </button>  
+              </IconButton>  
 
               <div className="flex flex-col items-center leading-[1]">
                 <Link href="/order" className="block m-0 p-0 text-green-700 font-semibold text-base">Order</Link>
