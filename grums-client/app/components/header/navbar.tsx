@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from 'next/link';
 import IconButton from "@/app/components/atoms/IconButton";
+import GrumsLogo from "@/app/components/atoms/GrumsLogo";
 import { useEffect, useRef, useState } from "react";
 import logo from "../icons/GrumsLogo.svg";
 import { Open_Sans,Montserrat ,Roboto, Roboto_Slab, IBM_Plex_Sans } from "next/font/google";
@@ -83,7 +84,7 @@ export default function Navbar() {
             {/* CENTER: Single logo circle overlapping the seam */}
             <div className="relative grid place-items-center ">
               <Link href="/" aria-label="Go home">
-                <img src={logo.src} alt="" className="h-25 w-34 hover:scale-105 transition-all "/>
+                <GrumsLogo size="lg"/>
               </Link>
             </div>
 
@@ -151,14 +152,7 @@ export default function Navbar() {
        
             <div className="grid place-items-center">
               <Link href="/" aria-label="Go Home">
-                <Image
-                  src={logo}
-                  alt="Grum's Home"
-                  width={120}
-                  height={120}
-                  className="object-contain"
-                  priority
-                />
+                <GrumsLogo/>
               </Link>
             </div>
 
