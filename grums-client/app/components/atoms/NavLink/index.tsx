@@ -11,12 +11,18 @@ const ibmPlex = IBM_Plex_Sans({
 interface NavLinkProps {
     href : string;
     children : React.ReactNode;
+    className? : string;
+    onClick?: () => void;
 }
 
 
-export default function NavLink({href, children}: NavLinkProps) {
+export default function NavLink({href, children, className="", onClick }: NavLinkProps) {
     return (
-        <Link href={href} className={`text-black hover:text-green-900 hover:underline hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}>
+        <Link 
+            href={href}
+            onClick={onClick} 
+            className={`text-black hover:text-green-900 hover:underline 
+            hover:font-semibold text-lg tracking-[-0.02em] ${ibmPlex.className} font-regular`}>
             {children}
         </Link>
         

@@ -6,7 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import lightTheme from "./light.theme";
 import { CssBaseline } from "@mui/material";
 import Container from "@mui/material/Container";
-import Navbar from "./components/header/navbar";
+import Navbar from "./components/organisms/NavBar";
 import { Roboto_Slab } from "next/font/google";
 import Items from "./components/menu/menu";
 
