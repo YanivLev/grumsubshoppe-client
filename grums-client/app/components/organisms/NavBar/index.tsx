@@ -13,7 +13,7 @@ import { IBM_Plex_Sans } from "next/font/google";
 const ibmPlex = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-IBM-Plex-Sans",
-  weight: ["400", "500", "600", "700"], // pick weights you
+  weight: ["400", "500", "600", "700"],
 });
 
 export default function Navbar() {

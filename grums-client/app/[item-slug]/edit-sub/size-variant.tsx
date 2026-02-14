@@ -1,5 +1,6 @@
 "use client"
 
+import RequiredLabel from "@/app/components/atoms/RequiredLabel";
 import {Item} from "@/app/components/menu/interfaces/item.interface";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -15,7 +16,7 @@ interface SizeVariantProps {
       <div className="w-full max-w-md">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xl font-semibold">Size</span>
-          <span className="text-[12px] text-red-500 uppercase tracking-tighter">*Required</span>
+          <RequiredLabel/>
         </div>
         
         <div className="flex flex-col gap-3">
