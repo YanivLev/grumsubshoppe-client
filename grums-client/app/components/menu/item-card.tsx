@@ -7,9 +7,7 @@ import { Stack } from "@mui/material";
 import Link from "next/link"; // 1. Import Link for client-side navigation
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-interface ItemProps {
-    item: IItem;
-}
+
 
 interface ItemGroupProps {
     itemGroup: IItemGroup;

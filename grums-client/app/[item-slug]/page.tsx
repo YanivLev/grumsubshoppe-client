@@ -26,8 +26,8 @@ export default async function EditSubPage(props: {
   // const modifierGroups = await getModifierGroups(item.id);
   
   // Mock Data for layout building:
-  const displayName = slug?.replace(/-/g, ' ');
-  const itemPrice = 15; 
+  // const displayName = slug?.replace(/-/g, ' ');
+  // const itemPrice = 15; 
 
   // Define variations based on itemGroupData or mock data
   const variations = itemGroupData.items?.elements || [];
