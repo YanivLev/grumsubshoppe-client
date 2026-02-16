@@ -12,11 +12,10 @@ import {get, getById} from "@/app/common/util/fetch";
 
     export default async function getModifiers(itemId: string) {
         try {
-        const data = await getById('clover/inventory', itemId);
-        // Only log here to see what came from the API
-        const modData = data.modifierGroups;
-        console.log("API Result:", modData, modData.length); 
-        return modData;
+        const data = await getById(`clover/inventory/${itemId}`, itemId);
+        console.log("API Result (full):", data);
+        const modData = data.modifierGroups?.elements;
+        return modData ?? [];
         } catch (error) {
         console.error("Fetch Error:", error);
         return [];

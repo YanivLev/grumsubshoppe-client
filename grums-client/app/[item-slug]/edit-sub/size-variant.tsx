@@ -1,6 +1,6 @@
 "use client"
 
-import {Item} from "@/app/components/menu/interfaces/item.interface";
+import { Item } from "@/app/components/menu/interfaces/item.interface";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
