@@ -14,7 +14,6 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
 
-
   useEffect(() => {
     if(!activeItem) return;
     getModifiers(activeItem.id).then((groups) => {
