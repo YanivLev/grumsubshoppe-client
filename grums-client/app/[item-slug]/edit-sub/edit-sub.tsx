@@ -1,13 +1,36 @@
 // app/[item-slug]/components/sub-customizer.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SizeVariant from './size-variant';
 import {Item} from "@/app/components/menu/interfaces/item.interface";
+import { IModifierGroup } from "./interfaces/modifier.interface"
+import  getModifiers  from "./actions/get-modifiers"
+import  ModifierGroup  from "./modifier-group"
 
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
   const [activeItem, setActiveItem] = useState<Item | null>(null);
   const [sumPrices, setSumPrices] = useState<number>(0);
+  const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
+  const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
+
+  
+  useEffect(() => {
+    if(!activeItem) return;
+    getModifiers(activeItem.id).then((groups) => {
+      setModifierGroups(groups);
+      console.log("Modifier groups:", groups);
+    });
+  }, [activeItem]);
+
+
+//Checks if ID is already in the array -> if true removes, or else adds.
+  function handleToggle(id: string) {
+    setSelectedModifierIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }
+  
 
   return (
     <div className="flex flex-col lg:flex-row gap-50">
