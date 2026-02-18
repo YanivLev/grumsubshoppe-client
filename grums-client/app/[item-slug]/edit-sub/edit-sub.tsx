@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import SizeVariant from './size-variant';
 import {Item} from "@/app/components/menu/interfaces/item.interface";
 import { IModifierGroup } from "./interfaces/modifier.interface"
-import  getModifiers  from "./actions/get-modifiers"
+import { getModifierGroups, getModifiers }  from "./actions/get-modifiers"
 import  ModifierGroup  from "./modifier-group"
 
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
@@ -16,9 +16,14 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
 
   useEffect(() => {
     if(!activeItem) return;
-    getModifiers(activeItem.id).then((groups) => {
-      setModifierGroups(groups);
-      console.log("Modifier groups:", groups);
+    getModifierGroups(activeItem.id).then(async (groups) => {
+      const groupsWithModifiers = await Promise.all(
+        groups.map(async (group: IModifierGroup) => {
+          const modifiers = await getModifiers(group.id);
+          return { ...group, modifiers: { elements: modifiers } };
+        })
+      );
+      setModifierGroups(groupsWithModifiers);
     });
   }, [activeItem]);
 
@@ -70,6 +75,8 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
             onToggle={handleToggle}
           />
         ))}
+
+        
 
       </div>
     </div>
