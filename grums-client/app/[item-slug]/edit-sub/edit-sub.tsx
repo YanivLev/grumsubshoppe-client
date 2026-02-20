@@ -7,6 +7,7 @@ import {Item} from "@/app/components/menu/interfaces/item.interface";
 import { IModifierGroup } from "./interfaces/modifier.interface"
 import { getModifierGroups, getModifiers }  from "./actions/get-modifiers"
 import  ModifierGroup  from "./modifier-group"
+import { DEFAULT_INGREDIENTS } from './recepies';
 
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
   const [activeItem, setActiveItem] = useState<Item | null>(null);
@@ -14,8 +15,14 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
 
+
   useEffect(() => {
     if(!activeItem) return;
+
+    //
+    const defaultIds = DEFAULT_INGREDIENTS[activeItem.id] ?? [];
+    setSelectedModifierIds(defaultIds);
+
     getModifierGroups(activeItem.id).then(async (groups) => {
       const groupsWithModifiers = await Promise.all(
         groups.map(async (group: IModifierGroup) => {
@@ -59,7 +66,6 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
       </div>
         
       <div className="flex-grow">
-        {/* Your Size selection component */}
         <SizeVariant 
           variations={variations} 
           selectedItemId={activeItem?.id} 
@@ -71,12 +77,10 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
             key={group.id}
             group={group}
             selectedIds={selectedModifierIds}
-            defaultIds={[]}
+            defaultIds={activeItem ? DEFAULT_INGREDIENTS[activeItem.id] ?? []: []}
             onToggle={handleToggle}
           />
         ))}
-
-        
 
       </div>
     </div>
