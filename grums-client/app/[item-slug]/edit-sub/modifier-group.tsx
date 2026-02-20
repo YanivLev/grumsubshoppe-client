@@ -10,9 +10,10 @@ interface ModifierGroupProps {
 
 export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}:ModifierGroupProps) {
     return (
-        <div>
-            <h3>{group.name}</h3>
+        <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{group.name}</h3>
 
+            <div className="flex gap-4 overflow-x-auto">
             {group.modifiers?.elements?.map((item) => (
                 <ModifierChip 
                     key={item.id}
@@ -22,6 +23,7 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
                     onToggle={() => onToggle(item.id)}
                 />
             ))}
+            </div>
         </div>
     )
 }

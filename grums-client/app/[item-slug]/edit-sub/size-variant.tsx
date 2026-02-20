@@ -13,7 +13,7 @@ interface SizeVariantProps {
   
   export default function SizeVariant({ variations, selectedItemId, onSelect }: SizeVariantProps) {
     return (
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mb-8">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xl font-semibold">Size</span>
           <RequiredLabel/>

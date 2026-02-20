@@ -19,7 +19,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   useEffect(() => {
     if(!activeItem) return;
 
-    //
+    //Set default modifier ids, if none return empty array.
     const defaultIds = DEFAULT_INGREDIENTS[activeItem.id] ?? [];
     setSelectedModifierIds(defaultIds);
 
