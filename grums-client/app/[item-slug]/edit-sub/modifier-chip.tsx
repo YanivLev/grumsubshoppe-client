@@ -11,9 +11,10 @@ interface ModifierChipProps {
 
 export default function ModifierChip({label, selected, isDefault, onToggle}: ModifierChipProps) {
     return (
+
         <button onClick={onToggle}
-        className="flex flex-col items-center gap-2 cursor-pointer min-w-[80px]"
-        >
+        className="relative flex flex-col items-center gap-2 cursor-pointer w-[80px] snap-start shrink-0"
+        >   
             {/* Circle container */}
             <div className={`
                 relative w-20 h-20 rounded-full
@@ -26,8 +27,8 @@ export default function ModifierChip({label, selected, isDefault, onToggle}: Mod
             </div>
 
             <span className="text-sm text-center text-gray-700 max-w-[100px] break-words">
-                {label}    
-            </span> 
+                    {label}    
+                </span> 
         </button>
     )
 }

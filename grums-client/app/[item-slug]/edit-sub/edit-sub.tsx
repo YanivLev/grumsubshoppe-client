@@ -46,7 +46,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
     <div className="flex flex-col lg:flex-row gap-50">
 
       {/* THE CART SIDEBAR */}
-      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fIt shadow-md sticky top-10">
+      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fIt shadow-md sticky top-10 shrink-0">
         <h2 className="flex justify-center text-2xl font-bold mb-6">Your Cart</h2>
         <div className="bg-white shadow-inner text-center mb-4 rounded-md w-full">
             <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
@@ -65,7 +65,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
         </button>
       </div>
         
-      <div className="flex-grow">
+      <div className="flex-grow min-w-0">
         <SizeVariant 
           variations={variations} 
           selectedItemId={activeItem?.id} 
