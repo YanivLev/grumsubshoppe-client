@@ -8,13 +8,14 @@ import { IModifierGroup } from "./interfaces/modifier.interface"
 import { getModifierGroups, getModifiers }  from "./actions/get-modifiers"
 import  ModifierGroup  from "./modifier-group"
 import { DEFAULT_INGREDIENTS } from './recepies';
+import ModifierGroupSkeleton from './modifier-group-skeleton';
 
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
   const [activeItem, setActiveItem] = useState<Item | null>(null);
   const [sumPrices, setSumPrices] = useState<number>(0);
   const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if(!activeItem) return;
@@ -22,6 +23,8 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
     //Set default modifier ids, if none return empty array.
     const defaultIds = DEFAULT_INGREDIENTS[activeItem.id] ?? [];
     setSelectedModifierIds(defaultIds);
+
+    setIsLoading(true);
 
     getModifierGroups(activeItem.id).then(async (groups) => {
       const groupsWithModifiers = await Promise.all(
@@ -31,6 +34,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
         })
       );
       setModifierGroups(groupsWithModifiers);
+      setIsLoading(false);
     });
   }, [activeItem]);
 
@@ -45,8 +49,34 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   return (
     <div className="flex flex-col lg:flex-row gap-50">
 
-      {/* THE CART SIDEBAR */}
-      <div className="w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fIt shadow-md sticky top-10 shrink-0">
+
+        
+      <div className="order-2 flex-grow min-w-0">
+        <SizeVariant 
+          variations={variations} 
+          selectedItemId={activeItem?.id} 
+          onSelect={(item) => setActiveItem(item)} 
+        />
+      {isLoading || !activeItem
+        ? <>
+            <ModifierGroupSkeleton />
+            <ModifierGroupSkeleton />
+          </>
+        : modifierGroups.map((group) => (
+          <ModifierGroup
+          key={group.id}
+          group={group}
+          selectedIds={selectedModifierIds}
+          defaultIds={activeItem ? DEFAULT_INGREDIENTS[activeItem.id] ?? []: []}
+          onToggle={handleToggle}
+        />
+    ))
+}
+
+      </div>
+
+            {/* THE CART SIDEBAR */}
+            <div className="order-1 w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fit shadow-md sticky top-10 shrink-0">
         <h2 className="flex justify-center text-2xl font-bold mb-6">Your Cart</h2>
         <div className="bg-white shadow-inner text-center mb-4 rounded-md w-full">
             <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
@@ -63,25 +93,6 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
         >
           {activeItem ? "Add to Cart" : "Select a Size"}
         </button>
-      </div>
-        
-      <div className="flex-grow min-w-0">
-        <SizeVariant 
-          variations={variations} 
-          selectedItemId={activeItem?.id} 
-          onSelect={(item) => setActiveItem(item)} 
-        />
-
-        {modifierGroups.map((group) => (
-          <ModifierGroup
-            key={group.id}
-            group={group}
-            selectedIds={selectedModifierIds}
-            defaultIds={activeItem ? DEFAULT_INGREDIENTS[activeItem.id] ?? []: []}
-            onToggle={handleToggle}
-          />
-        ))}
-
       </div>
     </div>
   );
