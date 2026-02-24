@@ -25,10 +25,10 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
     return (
         <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4">{group.name}</h3>
-        <div className="relative flex items-center w-full">
-    
+        <div className="relative flex items-center gap-2 w-full">
+
             {/* Left Arrow */}
-            <button 
+            <button
                 onClick={scrollLeft}
                 className="z-10 p-2 bg-white shadow-md border rounded-full hover:bg-gray-100 cursor-pointer"
             >
@@ -36,9 +36,9 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
             </button>
 
             {/* Scrollable Row */}
-            <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-2 min-w-0 flex-1 max-w-[384px]" style={{ scrollbarWidth: 'none' }}>
+            <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory min-w-0 flex-1 max-w-[368px]" style={{ scrollbarWidth: 'none' }}>
                 {group.modifiers?.elements?.map((item) => (
-                    <ModifierChip 
+                    <ModifierChip
                         key={item.id}
                         label={item.name}
                         selected={selectedIds.includes(item.id)}
@@ -49,7 +49,7 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
             </div>
 
             {/* Right Arrow */}
-            <button 
+            <button
                 onClick={scrollRight}
                 className="z-10 p-2 bg-white shadow-md border rounded-full hover:bg-gray-100 cursor-pointer"
             >
