@@ -14,15 +14,17 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   const [activeItem, setActiveItem] = useState<Item | null>(null);
   const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
+  const [quantity, setQuantity] = useState<number>(1)
   const [isLoading, setIsLoading] = useState(false)
-
+  
+  
   useEffect(() => {
     if(!activeItem) return;
 
     //Set default modifier ids, if none return empty array.
     const defaultIds = DEFAULT_INGREDIENTS[activeItem.id] ?? [];
     setSelectedModifierIds(defaultIds);
-
+    setQuantity(1);
     setIsLoading(true);
 
     getModifierGroups(activeItem.id).then(async (groups) => {
@@ -48,7 +50,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   const allModifiers = modifierGroups.flatMap(group =>
     group.modifiers?.elements ?? []);
   const selectedModifiers = allModifiers.filter(mod => selectedModifierIds.includes(mod.id));
-  const totalPrice = ((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => sum + (mod.price ?? 0), 0)) / 100;
+  const totalPrice = (((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => sum + (mod.price ?? 0), 0)) / 100) * quantity;
   return (
     <div className="flex flex-col lg:flex-row gap-20 lg:gap-50">
 
@@ -84,8 +86,14 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
 
       <div className="bg-white rounded-xl p-4 mb-4 shadow-inner">
       {/* Sub name + base price */}
+        
         <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
-          <span className="text-lg font-semibold">{activeItem?.name ?? "No size selected"}</span>
+        {quantity > 1 ? (
+          <span className="text-md font-semibold ">{`${quantity}x`}</span>
+        ):<></>}
+        {quantity > 1 ? (
+          <span className="text-lg font-semibold -ml-45">{activeItem?.name ?? "No size selected"}</span>
+        ): <span className="text-lg font-semibold">{activeItem?.name ?? "No size selected"}</span>}
           <span className="text-lg font-bold">
             {activeItem ? `$${(activeItem.price / 100).toFixed(2)}`: ""}
           </span>
@@ -107,6 +115,7 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
             ))}
           </ul>
         ) : (
+          
           <p className="text-sm text-gray-400 text-center">No toppings selected</p>
         )}
       </div>
@@ -116,6 +125,31 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
         <span className="font-semibold text-gray-700">Total</span>
         <span className="text-xl font-bold">{activeItem ? `$${totalPrice.toFixed(2)}` : "--.--"}</span>
       </div>
+
+        {/* Quantity */}
+      {activeItem ?(
+      <div className="flex justify-between items-center px-2 mb-4 w-full h-12 rounded-full bg-gray-300">
+        <span className="font-semibold text-gray-700">Quantity</span>
+        <div className="flex items-center gap-3">
+          {quantity > 1 && (
+          <button
+          onClick={() => setQuantity(q => q - 1)}
+          className="w-8 h-8 rounded-full bg-gray-200 cursor-pointer hover:bg-gray-300 font-bold text-lg flex items-center justify-center"
+          >
+            −
+          </button>
+        )}
+
+          <span className="text-lg font-semibold w-4 text-center">{quantity}</span>
+          <button
+              onClick={() => setQuantity(q => q + 1)}
+              className="w-8 h-8 rounded-full bg-gray-200  cursor-pointer hover:bg-gray-300 font-bold text-lg flex items-center justify-center"
+          >
+          +
+          </button>
+        </div>
+      </div>
+      ): <div></div>}
 
       <button
         disabled={!activeItem}
