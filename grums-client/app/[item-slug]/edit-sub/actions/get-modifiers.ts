@@ -6,7 +6,6 @@ import { getById } from "@/app/common/util/fetch";
     export async function getModifierGroups(itemId: string) {
         try {
         const data = await getById(`clover/inventory/${itemId}`, itemId);
-        console.log("API Result (full):", JSON.stringify(data, null, 2));
         const modGData = data.modifierGroups?.elements;
         return modGData ?? [];
         } catch (error) {
