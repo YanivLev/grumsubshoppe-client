@@ -12,7 +12,6 @@ import ModifierGroupSkeleton from './modifier-group-skeleton';
 
 export default function SubCustomizer({ itemGroupName, variations }: { itemGroupName: string, variations: Item[] }) {
   const [activeItem, setActiveItem] = useState<Item | null>(null);
-  const [sumPrices, setSumPrices] = useState<number>(0);
   const [modifierGroups, setModifierGroups] = useState<IModifierGroup[]>([]);
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false)
@@ -46,12 +45,16 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
     );
   }
 
+  const allModifiers = modifierGroups.flatMap(group =>
+    group.modifiers?.elements ?? []);
+  const selectedModifiers = allModifiers.filter(mod => selectedModifierIds.includes(mod.id));
+  const totalPrice = ((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => sum + (mod.price ?? 0), 0)) / 100;
   return (
-    <div className="flex flex-col lg:flex-row gap-50">
+    <div className="flex flex-col lg:flex-row gap-20 lg:gap-50">
 
 
         
-      <div className="order-2 flex-grow min-w-0">
+      <div className="lg:order-2 flex-grow min-w-0">
         <SizeVariant 
           variations={variations} 
           selectedItemId={activeItem?.id} 
@@ -75,25 +78,52 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
 
       </div>
 
-            {/* THE CART SIDEBAR */}
-            <div className="order-1 w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fit shadow-md sticky top-10 shrink-0">
-        <h2 className="flex justify-center text-2xl font-bold mb-6">Your Cart</h2>
-        <div className="bg-white shadow-inner text-center mb-4 rounded-md w-full">
-            <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
-            <span className="text-lg font-medium ">{activeItem?.name}</span>
-            <span className="text-lg font-bold">
-                {activeItem ? `${(activeItem.price/100).toFixed(2)}$` : "--.--"}
-            </span>
-            </div>
+    {/* SUB SIDEBAR */}
+    <div className="lg:order-1 w-full lg:w-110 bg-gray-100 p-6 rounded-[2rem] h-fit shadow-md sticky top-10 shrink-0">
+      <h2 className="text-center text-2xl font-bold mb-6">Your Sub</h2>
+
+      <div className="bg-white rounded-xl p-4 mb-4 shadow-inner">
+      {/* Sub name + base price */}
+        <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
+          <span className="text-lg font-semibold">{activeItem?.name ?? "No size selected"}</span>
+          <span className="text-lg font-bold">
+            {activeItem ? `$${(activeItem.price / 100).toFixed(2)}`: ""}
+          </span>
         </div>
-        
-        <button 
-          disabled={!activeItem}
-          className="w-full mt-8 bg-black text-white py-4 rounded-full font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
-        >
-          {activeItem ? "Add to Cart" : "Select a Size"}
-        </button>
+
+        {/* Selected modifiers list */}
+        {selectedModifiers.length > 0 ?(
+          <ul className="space-y-1">
+            {selectedModifiers.map(mod => (
+              <li key={mod.id} className="flex justify-between text-sm text-gray-600">
+                <span>{mod.name}</span>
+                <span>{mod.price > 0 
+                ? `+$${(mod.price / 100).toFixed(2)}` 
+                : (DEFAULT_INGREDIENTS[activeItem!.id] ?? []).includes(mod.id)
+                ? "Included"
+                : `+$${(mod.price / 100).toFixed(2)}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-400 text-center">No toppings selected</p>
+        )}
       </div>
+
+      {/* Total price */}
+      <div className="flex justify-between items-center px-1 mb-4">
+        <span className="font-semibold text-gray-700">Total</span>
+        <span className="text-xl font-bold">{activeItem ? `$${totalPrice.toFixed(2)}` : "--.--"}</span>
+      </div>
+
+      <button
+        disabled={!activeItem}
+        className="w-full bg-black text-white py-4 rounded-full font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+      >
+        {activeItem ? "Add to Cart" : "Select a Size"}
+      </button>
     </div>
+  </div>
   );
 }

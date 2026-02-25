@@ -3,6 +3,9 @@
 import { useRef } from 'react'
 import { IModifierGroup } from "./interfaces/modifier.interface";
 import ModifierChip from "./modifier-chip"
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 
 interface ModifierGroupProps {
     group: IModifierGroup;
@@ -30,13 +33,14 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
             {/* Left Arrow */}
             <button
                 onClick={scrollLeft}
-                className="z-10 p-2 bg-white shadow-md border rounded-full hover:bg-gray-100 cursor-pointer"
+                className="pb-3"
             >
-                ‹
+                <ArrowCircleLeftIcon fontSize={"large"} color={"action"} className="rounded-full cursor-pointer hover:bg-gray-200 " />
+                {/* <ArrowBackIosIcon fontSize={"inherit"}/> */}
             </button>
 
             {/* Scrollable Row */}
-            <div ref={scrollRef} className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory min-w-0 flex-1 max-w-[368px]" style={{ scrollbarWidth: 'none' }}>
+            <div ref={scrollRef} className="flex gap-2 lg:gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory min-w-0 flex-1 max-w-[272px] lg:max-w-[368px]" style={{ scrollbarWidth: 'none' }}>
                 {group.modifiers?.elements?.map((item) => (
                     <ModifierChip
                         key={item.id}
@@ -51,9 +55,10 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
             {/* Right Arrow */}
             <button
                 onClick={scrollRight}
-                className="z-10 p-2 bg-white shadow-md border rounded-full hover:bg-gray-100 cursor-pointer"
+                className="pb-3"
             >
-                ›
+                <ArrowCircleRightIcon fontSize={"large"} color={"action"} className="rounded-full cursor-pointer hover:bg-gray-200"/>
+                {/* <ArrowBackIosIcon fontSize={"inherit"}/> */}
             </button>
             </div>
     </div>
