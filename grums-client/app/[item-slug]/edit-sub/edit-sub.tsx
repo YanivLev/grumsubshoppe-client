@@ -1,7 +1,7 @@
 // app/[item-slug]/components/sub-customizer.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SizeVariant from './size-variant';
 import {Item} from "@/app/components/menu/interfaces/item.interface";
 import { IModifierGroup } from "./interfaces/modifier.interface"
@@ -16,8 +16,9 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState<number>(1)
   const [isLoading, setIsLoading] = useState(false)
-  
-  
+  const modifierCache = useRef<Record<string, IModifierGroup[]>>({});
+
+
   useEffect(() => {
     if(!activeItem) return;
 
@@ -25,6 +26,12 @@ export default function SubCustomizer({ itemGroupName, variations }: { itemGroup
     const defaultIds = DEFAULT_INGREDIENTS[activeItem.id] ?? [];
     setSelectedModifierIds(defaultIds);
     setQuantity(1);
+
+    if (modifierCache.current[activeItem.id]) {
+      setModifierGroups(modifierCache.current[activeItem.id]);
+      return;
+    }
+
     setIsLoading(true);
 
     getModifierGroups(activeItem.id).then(async (groups) => {

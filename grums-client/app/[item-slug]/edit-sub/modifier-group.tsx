@@ -31,10 +31,7 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
         <div className="relative flex items-center gap-2 w-full">
 
             {/* Left Arrow */}
-            <button
-                onClick={scrollLeft}
-                className="pb-3"
-            >
+            <button onClick={scrollLeft} aria-label="Scroll left" className="pb-3">
                 <ArrowCircleLeftIcon fontSize={"large"} color={"action"} className="rounded-full cursor-pointer hover:bg-gray-200 " />
                 {/* <ArrowBackIosIcon fontSize={"inherit"}/> */}
             </button>
@@ -53,10 +50,7 @@ export default function ModifierGroup({group, selectedIds, defaultIds, onToggle}
             </div>
 
             {/* Right Arrow */}
-            <button
-                onClick={scrollRight}
-                className="pb-3"
-            >
+            <button onClick={scrollRight} aria-label="Scroll right" className="pb-3">
                 <ArrowCircleRightIcon fontSize={"large"} color={"action"} className="rounded-full cursor-pointer hover:bg-gray-200"/>
                 {/* <ArrowBackIosIcon fontSize={"inherit"}/> */}
             </button>
