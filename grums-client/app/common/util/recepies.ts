@@ -1,5 +1,3 @@
-// Default ingredients for each sub size
-// TODO: Replace these mock IDs with real Clover modifier IDs from the admin panel
 
 export const DEFAULT_INGREDIENTS: Record<string, { id: string, name: string }[]>= {
   // Example: Replace 'ITEM_ID_6_INCH' with the actual 6-inch sub item ID from Clover
@@ -15,9 +13,6 @@ export const DEFAULT_INGREDIENTS: Record<string, { id: string, name: string }[]>
       {id: '1D870SYRHRJST', name: 'Salami'},
       {id: 'PXG435YNJQ604', name: 'Provolone'}
     ]
-  // Placeholder structure - update with your actual item IDs and modifier IDs
-  // You can get these from the console.log in get-modifiers.ts when you select a size
-
 };
 
 // Optional: Map of "removal" modifiers (e.g., "No Lettuce", "No Tomato")
