@@ -26,7 +26,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
   const MAX_QUANTITY = 100;
 
-
+console.log("Extras", extraModifierIds)
   useEffect(() => {
     if(!activeItem) return;
 
@@ -50,21 +50,22 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   }, [activeItem]);
 
 
-function handleToggle(id: string) {
-  const isDefault = (activeItem ? (DEFAULT_INGREDIENTS[activeItem.id] ?? []).map(data => data.id).includes(id) : false);
-  setSelectedModifierIds((prev) => {
-    if (prev.includes(id)) {
-      if (isDefault) setRemovedDefaultIds(r => [...r, id]);
-      setExtraModifierIds(e => e.filter(x => x !== id));
-      setLightModifierIds(e => e.filter(x => x !== id));
-      return prev.filter((x) => x !== id);
+  function handleToggle(id: string) {
+    const isDefault = activeItem
+      ? (DEFAULT_INGREDIENTS[activeItem.id] ?? []).map(data => data.id).includes(id)
+      : false;
+    const isCurrentlySelected = selectedModifierIds.includes(id);
+  
+    if (isCurrentlySelected) {
+      setSelectedModifierIds(prev => prev.filter(x => x !== id));
+      if (isDefault) setRemovedDefaultIds(prev => [...prev, id]);
+      setExtraModifierIds(prev => prev.filter(x => x !== id));
+      setLightModifierIds(prev => prev.filter(x => x !== id));
     } else {
-      if (isDefault) setRemovedDefaultIds(r => r.filter(x => x !== id));
-      return [...prev, id];
+      setSelectedModifierIds(prev => [...prev, id]);
+      if (isDefault) setRemovedDefaultIds(prev => prev.filter(x => x !== id));
     }
-  });
-}
-
+  }
 
 function handleExtra(id: string) {
   setLightModifierIds(prev => prev.filter(x => x !== id));
@@ -90,7 +91,7 @@ function handleLight(id: string) {
     const groupIds = group.modifiers?.elements?.map(m => m.id) ?? [];
     const removedInGroup = removedDefaultIds.filter(id => groupIds.includes(id));
     const addedInGroup = selectedModifiers.filter(mod =>
-    groupIds.includes(mod.id) && !defaultIds.includes(mod.id)
+    groupIds.includes(mod.id) && (!defaultIds.includes(mod.id) || (defaultIds.includes(mod.id) && extraModifierIds.includes(mod.id)))
     );
     return addedInGroup.slice(0, removedInGroup.length).map((mod, i) => ({
       addedId: mod.id,
@@ -102,15 +103,16 @@ function handleLight(id: string) {
     const isExtra = extraModifierIds.includes(mod.id);
     const isDefaultMod = defaultIds.includes(mod.id);
     const isReplacement = replacementIds.includes(mod.id);
+    if (isReplacement && isDefaultMod  && isExtra) return sum;
     if (isReplacement && !isExtra) return sum;
-    if (isReplacement && isExtra) return sum + (mod.price ?? 0);
+    if (isReplacement && isExtra ) return sum + (mod.price ?? 0);
     if (isDefaultMod && !isExtra) return sum;
     if (isDefaultMod && isExtra) return sum + (mod.price ?? 0);
     if (!isDefaultMod && isExtra) return sum + (mod.price ?? 0) * 2;
     return sum + (mod.price ?? 0);
   }, 0)) / 100) * quantity;
 
-
+  console.log("Replacements", replacementIds);
   return (
     <div className="flex flex-col lg:flex-row gap-20 lg:gap-50">
       <div className="lg:order-2 flex-grow min-w-0">
@@ -176,31 +178,35 @@ function handleLight(id: string) {
                 <Fragment key={mod.id}>
                   <li className="flex justify-between text-sm text-gray-600">
                   <span>
-                    {replacement
-                      ? isExtra
-                        ? `Extra ${mod.name} instead of ${removedMod?.name}`
-                        : isLight
-                        ? `Light ${mod.name} instead of ${removedMod?.name}`
-                        : `${mod.name} instead of ${removedMod?.name}`
-                      : isLight ? `Light ${mod.name}`
-                      : isExtra ? `Extra ${mod.name}`
-                      : mod.name}
+                  {replacement && isDefault && isExtra
+                    ? `Extra ${mod.name}`
+                    : replacement && isExtra
+                    ? `Extra ${mod.name} instead of ${removedMod?.name}`
+                    : replacement && isLight
+                    ? `Light ${mod.name} instead of ${removedMod?.name}`
+                    : replacement
+                    ? `${mod.name} instead of ${removedMod?.name}`
+                    : isLight ? `Light ${mod.name}`
+                    : isExtra ? `Extra ${mod.name}`
+                    : mod.name}
                   </span>
 
                   <span>
-                    {replacement && isExtra
-                      ? `+$${(mod.price / 100).toFixed(2)}`
-                      : replacement
-                      ? ""
-                      : isExtra
-                        ? isDefault
+                  {replacement && isDefault && isExtra
+                    ? "Included"
+                    : replacement && isExtra
+                    ? `+$${(mod.price / 100).toFixed(2)}`
+                    : replacement
+                    ? ""
+                    : isExtra
+                      ? isDefault
                         ? `+$${(mod.price / 100).toFixed(2)}`
                         : `+$${((mod.price / 100) * 2).toFixed(2)}`
-                      : defaultIds.includes(mod.id)
-                      ? "Included"
-                      : mod.price > 0
-                      ? `+$${(mod.price / 100).toFixed(2)}`
-                      : "$0.00"}
+                    : defaultIds.includes(mod.id)
+                    ? "Included"
+                    : mod.price > 0
+                    ? `+$${(mod.price / 100).toFixed(2)}`
+                    : "$0.00"}
                   </span>
                   </li>
                 </Fragment>
