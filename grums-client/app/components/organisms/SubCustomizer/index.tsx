@@ -61,7 +61,8 @@ console.log("Extras", extraModifierIds)
       if (isDefault) setRemovedDefaultIds(prev => [...prev, id]);
       setExtraModifierIds(prev => prev.filter(x => x !== id));
       setLightModifierIds(prev => prev.filter(x => x !== id));
-    } else {
+    } 
+    else {
       setSelectedModifierIds(prev => [...prev, id]);
       if (isDefault) setRemovedDefaultIds(prev => prev.filter(x => x !== id));
     }
@@ -178,7 +179,7 @@ function handleLight(id: string) {
                 <Fragment key={mod.id}>
                   <li className="flex justify-between text-sm text-gray-600">
                   <span>
-                  {replacement && isDefault && isExtra
+                    {replacement && isDefault && isExtra
                     ? `Extra ${mod.name}`
                     : replacement && isExtra
                     ? `Extra ${mod.name} instead of ${removedMod?.name}`
@@ -188,6 +189,7 @@ function handleLight(id: string) {
                     ? `${mod.name} instead of ${removedMod?.name}`
                     : isLight ? `Light ${mod.name}`
                     : isExtra ? `Extra ${mod.name}`
+                    : !isDefault ? `Add ${mod.name}`
                     : mod.name}
                   </span>
 
