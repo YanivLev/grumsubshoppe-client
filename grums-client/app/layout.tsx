@@ -7,7 +7,7 @@ import lightTheme from "./light.theme";
 import { CssBaseline } from "@mui/material";
 import Container from "@mui/material/Container";
 import Navbar from "./components/organisms/NavBar";
-
+import CartPanel from './components/organisms/CartPanel';
 
 // Metadata
 export const metadata: Metadata = {
@@ -32,15 +32,15 @@ export default function RootLayout({
       <body>
         <AppRouterCacheProvider>
           <ThemeProvider theme={lightTheme}>
-            
             <CssBaseline />
-            <Navbar/>
+            <Navbar />
             <Container>
               {children}
             </Container>
+            <CartPanel />
           </ThemeProvider>
         </AppRouterCacheProvider>
-      </body> 
+      </body>
     </html>
   );
 }

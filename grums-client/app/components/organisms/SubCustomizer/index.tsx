@@ -9,6 +9,8 @@ import { getModifierGroups, getModifiers } from "@/app/actions/item/get-modifier
 import ModifierGroup from "@/app/components/organisms/ModifierGroup";
 import { DEFAULT_INGREDIENTS } from '@/app/common/util/recepies';
 import ModifierGroupSkeleton from '@/app/components/molecules/ModifierGroupSkeleton';
+import { useCartStore } from '@/app/store/cart.store';
+import { useRouter } from 'next/navigation';
 
 export default function SubCustomizer({ itemGroupName, itemName, variations, initialItem = null }: {
   itemGroupName?: string,
@@ -26,7 +28,9 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
   const MAX_QUANTITY = 100;
 
-console.log("Extras", extraModifierIds)
+  const addItem = useCartStore((state) => state.addItem);
+  const openCart = useCartStore((state) => state.openCart);
+
   useEffect(() => {
     if(!activeItem) return;
 
@@ -81,6 +85,30 @@ function handleLight(id: string) {
     prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
   );
 }
+
+function handleAddToCart() {
+  if (!activeItem) return;
+
+  const cartModifiers = selectedModifiers.map((mod) => ({
+    id: mod.id,
+    name: mod.name,
+    price: mod.price ?? 0,
+    isExtra: extraModifierIds.includes(mod.id),
+    isLight: lightModifierIds.includes(mod.id),
+  }));
+
+  addItem({
+    itemId: activeItem.id,
+    name: activeItem.name,
+    basePrice: activeItem.price,
+    modifiers: cartModifiers,
+    quantity,
+    totalPrice: Math.round(totalPrice * 100),
+  });
+
+  openCart();
+}
+
 
 
   const allModifiers = modifierGroups.flatMap(group =>
@@ -258,10 +286,11 @@ function handleLight(id: string) {
       ): <div></div>}
 
       <button
+        onClick={handleAddToCart}
         disabled={!activeItem}
-        className="w-full bg-black text-white py-4 rounded-full font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+        className="w-full bg-black cursor-pointer text-white py-4 rounded-full font-bold disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
       >
-        {activeItem ? "Add to Cart" : "Select a Size"}
+        {activeItem ? 'Add to Cart' : 'Select a Size'}
       </button>
     </div>
   </div>
