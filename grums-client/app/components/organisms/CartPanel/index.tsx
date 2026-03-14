@@ -2,7 +2,7 @@
 
 import { useCartStore } from '@/app/store/cart.store';
 import CartItem from '@/app/components/molecules/CartItem';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function CartPanel() {
     const isCartOpen = useCartStore((state) => state.isCartOpen);
@@ -14,9 +14,10 @@ export default function CartPanel() {
     const [dragY, setDragY] = useState(0);
     const [dragTransition, setDragTransition] = useState(false);
     const dragStartY = useRef(0);
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const [isMobile, setIsMobile] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
 
-    if (!isCartOpen) return null;
+
 
     function handleClose() {
         setIsClosing(true);
@@ -25,6 +26,8 @@ export default function CartPanel() {
           setIsClosing(false);
         }, 480);
     }
+
+
 
     function handleTouchStart(e: React.TouchEvent) {
         dragStartY.current = e.touches[0].clientY;
@@ -50,28 +53,55 @@ export default function CartPanel() {
         }
     }
 
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+      
+        if (!isCartOpen) {
+          setIsVisible(false);
+          return;
+        }
+        const t = setTimeout(() => setIsVisible(true), 10);
+        return () => clearTimeout(t);
+      }, [isCartOpen]);
+    
+    if (!isCartOpen && !isVisible && !isClosing) return null;
+
       return (
         <>
-            <div
-                className={`fixed inset-0 bg-black/50 z-40 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
+           <div
+                style={{
+                    opacity: dragY > 0
+                        ? Math.max(0, 1 - dragY / window.innerHeight)
+                        : isClosing || !isVisible ? 0 : 1,
+                    transition: dragY > 0
+                        ? 'none'
+                        : dragTransition
+                            ? 'opacity 0.48s ease-in-out'
+                            : 'opacity 0.5s ease-out',
+                    backgroundColor: 'rgba(0,0,0,0.5)'
+                }}
+                className="fixed inset-0 z-40"
                 onClick={handleClose}
             />
     
             <div
-                style={dragY > 0 || dragTransition ? {
-                    transform: `translateY(${dragY}px)`,
-                    transition: dragTransition ? 'transform 0.48s ease-in-out' : 'none'
-                } : {}}
-                className={`fixed z-50 bg-white shadow-2xl flex flex-col
-                    bottom-0 left-0 right-0 h-[85vh] rounded-t-2xl
-                    md:bottom-auto md:left-auto md:top-0 md:right-0 md:h-full md:w-full md:max-w-md md:rounded-none
-                    ${dragY > 0
-                        ? ''
-                        : isClosing
-                            ? isMobile ? 'animate-cart-out-bottom' : 'animate-cart-out-side'
-                            : isMobile ? 'animate-cart-in-bottom'  : 'animate-cart-in-side'
-                    }`}
+                style={{
+                    transform: dragY > 0
+                      ? `translateY(${dragY}px)`
+                      : isClosing || !isVisible
+                        ? isMobile ? 'translateY(100%)' : 'translateX(100%)'
+                        : isMobile ? 'translateY(0)' : 'translateX(0)',
+                    transition: dragY > 0
+                      ? 'none'
+                      : dragTransition
+                        ? 'transform 0.4s ease-in-out'
+                        : 'transform 0.4s ease-out'
+                  }}
+                  className="fixed z-50 bg-white shadow-2xl flex flex-col
+                  bottom-0 left-0 right-0 h-[85vh] rounded-t-2xl
+                  md:bottom-auto md:left-auto md:top-0 md:right-0 md:h-full md:w-full md:max-w-md md:rounded-none"
             >
+
                 <div
                     className="flex flex-col border-b border-gray-200 touch-none"
                     onTouchStart={handleTouchStart}
@@ -104,12 +134,14 @@ export default function CartPanel() {
                         <div className="flex flex-col gap-4">
                             {items.map((item) => (
                                 <CartItem
-                                    key={item.cartId}
-                                    cartId={item.cartId}
+                                    key={item.cartItemId}
+                                    cartItemId={item.cartItemId}
                                     name={item.name}
                                     modifiers={item.modifiers}
                                     quantity={item.quantity}
                                     totalPrice={item.totalPrice}
+                                    itemPath = {item.itemPath}
+                                    displayModifiers = {item.displayModifiers}
                                 />
                             ))}
                         </div>
