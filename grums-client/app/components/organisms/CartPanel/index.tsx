@@ -98,8 +98,8 @@ export default function CartPanel() {
                         : 'transform 0.4s ease-out'
                   }}
                   className="fixed z-50 bg-white shadow-2xl flex flex-col
-                  bottom-0 left-0 right-0 h-[85vh] rounded-t-2xl
-                  md:bottom-auto md:left-auto md:top-0 md:right-0 md:h-full md:w-full md:max-w-md md:rounded-none"
+                    bottom-0 left-0 right-0 h-[85vh] rounded-t-2xl
+                    lg:bottom-auto lg:left-auto lg:top-0 lg:right-0 lg:h-full lg:w-full lg:max-w-md lg:rounded-none"
             >
 
                 <div
@@ -109,12 +109,12 @@ export default function CartPanel() {
                     onTouchEnd={handleTouchEnd}
                 >
                     {/* Drag indicator — mobile only */}
-                    <div className="md:hidden flex justify-center pt-4 pb-1">
+                    <div className="lg:hidden flex justify-center pt-4 pb-1">
                         <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
                     </div>
 
                     {/* Title + close */}
-                    <div className="flex justify-between items-center px-6 py-4 md:cursor-default cursor-grab active:cursor-grabbing">
+                    <div className="flex justify-between items-center px-6 py-4 lg:cursor-default cursor-grab active:cursor-grabbing">
                         <h1 className="text-2xl font-bold">Your Cart</h1>
                         <button
                             onClick={handleClose}
@@ -141,7 +141,6 @@ export default function CartPanel() {
                                     quantity={item.quantity}
                                     totalPrice={item.totalPrice}
                                     itemPath = {item.itemPath}
-                                    displayModifiers = {item.displayModifiers}
                                 />
                             ))}
                         </div>

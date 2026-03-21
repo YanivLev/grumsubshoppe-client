@@ -3,9 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
+/* @theme {
   --breakpoint-tablet: 960px;
-}
+} */
 
 input[type="search"]::-webkit-search-cancel-button {
   filter: invert(48%) sepia(79%) saturate(800%) hue-rotate(86deg) brightness(50%) contrast(110%);

@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-4 lg:px-8">
 
           {/* ===== DESKTOP / LAPTOP ===== */}
-          <div className="hidden tablet:grid grid-cols-[1fr_auto_1fr] items-center h-28">
+          <div className="hidden lg:grid grid-cols-[1fr_auto_1fr] items-center h-28">
 
             {/* LEFT: Find Us */}
             <div className="h-fit flex items-center">
@@ -65,7 +65,7 @@ export default function Navbar() {
           </div>
 
           {/* ===== MOBILE / TABLET ===== */}
-          <div className="tablet:hidden grid grid-cols-3 items-center h-20">
+          <div className="lg:hidden grid grid-cols-3 items-center h-20">
             <IconButton
               ariaLabel={menuOpen ? "Close menu" : "Open menu"}
               onClick={() => setMenuOpen(v => !v)}
