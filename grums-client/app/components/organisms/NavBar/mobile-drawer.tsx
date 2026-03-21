@@ -14,7 +14,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
     return (
         <div
-          className={`tablet:hidden fixed inset-x-0 top-20 z-30 origin-top bg-white transition-all duration-200 ${
+          className={`lg:hidden fixed inset-x-0 top-20 z-30 origin-top bg-white transition-all duration-200 ${
             isOpen ? "scale-y-100 opacity-100" : "pointer-events-none scale-y-95 opacity-0"
           } border-t border-gray-200 shadow-lg`}
         >
