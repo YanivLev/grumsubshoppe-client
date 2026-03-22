@@ -170,22 +170,22 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     }));
   });
 
-  const displayModifiers = selectedModifiers.map((mod) => {
-    const replacement = replacements.find(r => r.addedId === mod.id);
-    const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
-    const isExtra = extraModifierIds.includes(mod.id);
-    const isLight = lightModifierIds.includes(mod.id);
-    const isDefault = defaultIds.includes(mod.id);
+  // const displayModifiers = selectedModifiers.map((mod) => {
+  //   const replacement = replacements.find(r => r.addedId === mod.id);
+  //   const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
+  //   const isExtra = extraModifierIds.includes(mod.id);
+  //   const isLight = lightModifierIds.includes(mod.id);
+  //   const isDefault = defaultIds.includes(mod.id);
   
-    if (replacement && isDefault && isExtra) return `Extra ${mod.name}`;
-    if (replacement && isExtra) return `Extra ${mod.name} instead of ${removedMod?.name}`;
-    if (replacement && isLight) return `Light ${mod.name} instead of ${removedMod?.name}`;
-    if (replacement) return `${mod.name} instead of ${removedMod?.name}`;
-    if (isLight) return `Light ${mod.name}`;
-    if (isExtra) return `Extra ${mod.name}`;
-    if (!isDefault) return `Add ${mod.name}`;
-    return mod.name;
-  });
+  //   if (replacement && isDefault && isExtra) return `Extra ${mod.name}`;
+  //   if (replacement && isExtra) return `Extra ${mod.name} instead of ${removedMod?.name}`;
+  //   if (replacement && isLight) return `Light ${mod.name} instead of ${removedMod?.name}`;
+  //   if (replacement) return `${mod.name} instead of ${removedMod?.name}`;
+  //   if (isLight) return `Light ${mod.name}`;
+  //   if (isExtra) return `Extra ${mod.name}`;
+  //   if (!isDefault) return `Add ${mod.name}`;
+  //   return mod.name;
+  // });
 
   const replacementIds = replacements.map(r => r.addedId);
   const totalPrice = (((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => {
@@ -258,6 +258,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                 const isDefault = defaultIds.includes(mod.id);
 
                 return (
+                  
                   <Fragment key={mod.id}>
                     <li className="flex justify-between text-sm text-gray-600">
                       <span>

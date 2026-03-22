@@ -3,6 +3,7 @@
 import { useCartStore } from '@/app/store/cart.store';
 import CartItem from '@/app/components/molecules/CartItem';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CartPanel() {
     const isCartOpen = useCartStore((state) => state.isCartOpen);
@@ -16,8 +17,7 @@ export default function CartPanel() {
     const dragStartY = useRef(0);
     const [isMobile, setIsMobile] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-
-
+    const router = useRouter();
 
     function handleClose() {
         setIsClosing(true);
@@ -26,8 +26,6 @@ export default function CartPanel() {
           setIsClosing(false);
         }, 480);
     }
-
-
 
     function handleTouchStart(e: React.TouchEvent) {
         dragStartY.current = e.touches[0].clientY;
@@ -51,6 +49,12 @@ export default function CartPanel() {
         } else {
           setDragY(0);
         }
+    }
+
+    function handlePlaceOrder() {
+        clearCart();
+        router.push('/order')
+        
     }
 
     useEffect(() => {
@@ -154,8 +158,8 @@ export default function CartPanel() {
                             <span className="text-2xl font-bold">${(total / 100).toFixed(2)}</span>
                         </div>
                         <button
-                            onClick={clearCart}
-                            className="w-full bg-black text-white py-4 rounded-full font-bold hover:bg-gray-800 transition-colors"
+                            onClick={handlePlaceOrder}
+                            className="w-full bg-black text-white py-4 rounded-full font-bold cursor-pointer hover:bg-gray-800 transition-colors"
                         >
                             Place Order
                         </button>
