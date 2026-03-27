@@ -27,6 +27,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [removedDefaultIds, setRemovedDefaultIds] = useState<string[]>([]);
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
+  const [note, setNote] = useState<string>("");
   const MAX_QUANTITY = 100;
 
   const addItem = useCartStore((state) => state.addItem);
@@ -51,6 +52,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     setExtraModifierIds([]);
     setLightModifierIds([]);
     setModifierGroups(modifiersByItemId[activeItem.id] ?? []);
+    setNote("");
   }, [activeItem]);
 
   

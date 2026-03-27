@@ -53,6 +53,12 @@ export default function CartPanel() {
         }
     }
 
+    function handlePlaceOrder() {
+        clearCart();
+        router.push('/order')
+        
+    }
+
     useEffect(() => {
         setIsMobile(window.innerWidth < 768);
       

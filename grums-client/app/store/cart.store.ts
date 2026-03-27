@@ -20,6 +20,7 @@ interface ICartItem {
     modifiers: ICartModifier[];
     quantity: number;
     totalPrice: number;
+    note?: string;
     itemPath: string;
 }
 
