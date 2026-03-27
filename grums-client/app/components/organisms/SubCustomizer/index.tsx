@@ -113,7 +113,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       isLight: lightModifierIds.includes(mod.id),
       isReplacement: !!replacement,
       replacedName: removedMod?.name,
-      note,
+      note: [printableModifiers.join('\n'), note],
     };
   });  
 
@@ -126,7 +126,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
-      note,
+      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n'),
     });
     openCart();
 
@@ -140,11 +140,11 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
-      note,
+      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n'),
     });
     openCart();
   }
-
+  console.log([...printableModifiers, note].filter(Boolean).join('\n'));
   router.back();
 }
 
@@ -167,7 +167,8 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     const selectedIds = entry.modifiers.map(m => m.id);
     setRemovedDefaultIds(defaultIds.filter(id => !selectedIds.includes(id)));
     setModifierGroups(modifiersByItemId[variation.id] ?? []);
-    setNote(entry.note || "");
+    const specialInstructions = entry.note?.split('\n').find(line => line.startsWith('\x1F'));
+    setNote(specialInstructions ? specialInstructions.slice(1) : "");
   }, [editCartItemId]);
 
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
