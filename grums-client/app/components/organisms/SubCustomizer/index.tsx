@@ -1,7 +1,7 @@
 // app/components/organisms/SubCustomizer/index.tsx
 'use client';
 
-import { useState, useEffect, Fragment, useRef } from 'react';
+import { useState, useEffect, Fragment, useRef, ChangeEvent, SyntheticEvent } from 'react';
 import SizeVariant from '@/app/components/molecules/SizeVariant';
 import { IItem } from "@/app/common/interfaces/item.interface";
 import { IModifierGroup } from "@/app/common/interfaces/modifier.interface";
@@ -27,9 +27,10 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [removedDefaultIds, setRemovedDefaultIds] = useState<string[]>([]);
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
-  const [note, setNote] = useState<string>("");
-  const MAX_QUANTITY = 100;
+  const [note, setNote] = useState<string>(""); //Notes for special requests
 
+  const MAX_QUANTITY = 100;
+  const MAX_CHAR_LENGTH = 80;
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
   
@@ -38,6 +39,15 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const router = useRouter();
 
   const isEditInit = useRef(false);
+
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const input = event.target.value;
+
+    if (input.length <= MAX_CHAR_LENGTH) {
+      setNote(input);
+    }
+
+  }
 
   useEffect(() => {
     if (!activeItem) return;
@@ -103,6 +113,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       isLight: lightModifierIds.includes(mod.id),
       isReplacement: !!replacement,
       replacedName: removedMod?.name,
+      note,
     };
   });  
 
@@ -115,6 +126,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
+      note,
     });
     openCart();
 
@@ -128,6 +140,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
+      note,
     });
     openCart();
   }
@@ -154,6 +167,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     const selectedIds = entry.modifiers.map(m => m.id);
     setRemovedDefaultIds(defaultIds.filter(id => !selectedIds.includes(id)));
     setModifierGroups(modifiersByItemId[variation.id] ?? []);
+    setNote(entry.note || "");
   }, [editCartItemId]);
 
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
@@ -172,22 +186,27 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     }));
   });
 
-  const displayModifiers = selectedModifiers.map((mod) => {
-    const replacement = replacements.find(r => r.addedId === mod.id);
-    const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
-    const isExtra = extraModifierIds.includes(mod.id);
-    const isLight = lightModifierIds.includes(mod.id);
-    const isDefault = defaultIds.includes(mod.id);
+  const printableModifiers = [
+    ...selectedModifiers.flatMap((mod) => {
+      const replacement = replacements.find(r => r.addedId === mod.id);
+      const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
+      const isExtra = extraModifierIds.includes(mod.id);
+      const isLight = lightModifierIds.includes(mod.id);
+      const isDefault = defaultIds.includes(mod.id);
   
-    if (replacement && isDefault && isExtra) return `Extra ${mod.name}`;
-    if (replacement && isExtra) return `Extra ${mod.name} instead of ${removedMod?.name}`;
-    if (replacement && isLight) return `Light ${mod.name} instead of ${removedMod?.name}`;
-    if (replacement) return `${mod.name} instead of ${removedMod?.name}`;
-    if (isLight) return `Light ${mod.name}`;
-    if (isExtra) return `Extra ${mod.name}`;
-    if (!isDefault) return `Add ${mod.name}`;
-    return mod.name;
-  });
+      if (replacement && isDefault && isExtra) return [`Extra ${mod.name}`];
+      if (replacement && isExtra) return [`Extra ${mod.name} instead of ${removedMod?.name}`];
+      if (replacement && isLight) return [`Light ${mod.name} instead of ${removedMod?.name}`];
+      if (replacement) return [`${mod.name} instead of ${removedMod?.name}`];
+      if (isLight) return [`Light ${mod.name}`];
+      if (isExtra) return [`Extra ${mod.name}`];
+      if (!isDefault) return [`Add ${mod.name}`];
+      return [];
+    }),
+    ...removedDefaultModifiers
+  .filter(mod => !replacements.find(r => r.removedId === mod.id))
+  .map(mod => `No ${mod.name}`)
+  ];
 
   const replacementIds = replacements.map(r => r.addedId);
   const totalPrice = (((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => {
@@ -306,8 +325,33 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
             <p className="text-sm text-gray-400 text-center">No toppings selected</p>
           )}
         </div>
+        {activeItem ? (
+          <div className="mt-6 flex flex-col gap-2">
+            <div className="flex justify-between items-center px-1">
+              <label 
+                htmlFor="item-notes" 
+                className="text-sm font-semibold text-gray-700 uppercase tracking-wider"
+              >
+                Special Instructions
+              </label>
+              <span className={`text-xs font-medium ${note.length >= MAX_CHAR_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
+                {note.length} / {MAX_CHAR_LENGTH}
+              </span>
+            </div>
+            
+            <textarea
+              id="item-notes"
+              rows={3}
+              placeholder="Add a note (e.g. label the sub, cut differently)"
+              value={note}
+              onChange={handleNoteChange}
+              className="w-full p-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all resize-none placeholder:text-gray-400"
+            />
+          </div>
 
-        <div className="flex justify-between items-center px-1 mb-4">
+        ):<div></div>}
+
+        <div className="flex justify-between items-center  px-1 mb-4 pt-4">
           <span className="font-semibold text-gray-700">Total</span>
           <span className="text-xl font-bold">{activeItem ? `$${totalPrice.toFixed(2)}` : "--.--"}</span>
         </div>
