@@ -104,12 +104,14 @@ export default function CartPanel() {
                         <div className="flex flex-col gap-4">
                             {items.map((item) => (
                                 <CartItem
-                                    key={item.cartId}
-                                    cartId={item.cartId}
+                                    key={item.cartItemId}
+                                    cartItemId={item.cartItemId}
                                     name={item.name}
                                     modifiers={item.modifiers}
                                     quantity={item.quantity}
                                     totalPrice={item.totalPrice}
+                                    itemPath={item.itemPath}
+                                    note={item.note}
                                 />
                             ))}
                         </div>
