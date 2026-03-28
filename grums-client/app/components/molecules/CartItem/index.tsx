@@ -69,12 +69,13 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                         </button>
                     </li>
                     )}
+                    {specialInstructions && (
+                       <p className="text-xs text-gray-400 italic mt-1 break-words">"{specialInstructions}"</p>
+                    )}
                 </ul>
             )}
 
-            {specialInstructions && (
-                <p className="text-xs text-gray-400 italic mt-1">"{specialInstructions}"</p>
-            )}
+
 
             <div className="flex justify-between items-center mt-2">
                 <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">

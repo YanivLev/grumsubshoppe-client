@@ -10,7 +10,7 @@ export default function CartIcon() {
     return (
         <button
           onClick={openCart}
-          className="relative cursor-pointer rounded-full border border-gray-300 hover:bg-gray-50 w-10 h-10 flex items-center justify-center transition-colors"
+          className="relative cursor-pointer rounded-full border border-gray-500 lg:border-gray-300 hover:bg-gray-50 w-10 h-10 flex items-center justify-center transition-colors"
         >
           <i className="bx bx-cart text-xl leading-[0]" />
           {itemCount > 0 && (
