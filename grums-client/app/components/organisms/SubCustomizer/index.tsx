@@ -30,7 +30,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [note, setNote] = useState<string>("");
 
   const MAX_QUANTITY = 100;
-  const MAX_CHAR_LENGTH = 80;
+  const MAX_CHAR_LENGTH = 120;
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
   const items = useCartStore((state) => state.items);
