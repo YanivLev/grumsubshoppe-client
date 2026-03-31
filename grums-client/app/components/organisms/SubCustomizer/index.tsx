@@ -256,7 +256,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                 const isExtra = extraModifierIds.includes(mod.id);
                 const isLight = lightModifierIds.includes(mod.id);
                 const isDefault = defaultIds.includes(mod.id);
-
+                
                 return (
                   
                   <Fragment key={mod.id}>
@@ -275,6 +275,9 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                           : !isDefault ? `Add ${mod.name}`
                           : mod.name}
                       </span>
+
+                        
+                      
                       <span>
                         {replacement && isDefault && isExtra
                           ? "Included"
@@ -296,10 +299,17 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                   </Fragment>
                 );
               })}
-              {removedDefaultModifiers.map(mod => (
-                <li key={`removed-${mod.id}`} className="flex justify-between text-sm text-red-400">
-                </li>
-              ))}
+              {removedDefaultModifiers.filter(mod => !replacements.find(r => r.removedId === mod.id)).length > 0 && (
+                <li className="border-t border-gray-200 my-1" />
+              )}
+              {removedDefaultModifiers
+                .filter(mod => !replacements.find(r => r.removedId === mod.id))
+                .map(mod => (
+                  <li key={`removed-${mod.id}`} className="flex justify-between text-sm text-red-400">
+                    <span>No {mod.name}</span>
+                  </li>
+                ))
+              }
             </ul>
           ) : (
             <p className="text-sm text-gray-400 text-center">No toppings selected</p>

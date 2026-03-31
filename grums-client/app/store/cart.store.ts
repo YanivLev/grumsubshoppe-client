@@ -12,7 +12,7 @@ interface ICartModifier {
     replacedName?: string;  
 }
 
-interface ICartItem {
+export interface ICartItem {
     cartItemId: string;
     itemId: string;
     name: string;

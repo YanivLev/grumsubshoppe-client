@@ -32,7 +32,7 @@ export default function ModifierChip({label, selected, isDefault, onToggle, isEx
                     </span>
             </button>
 
-            {selected ? (
+            {selected && (
                     <div className="inline-flex rounded-base shadow-xs gap-1 -space-x-px" >
                         <button onClick={onExtra} className={`rounded-l-lg transition-colors duration-300 ease-in-out px-2 cursor-pointer text-sm ${isExtra ? 'bg-gradient-to-r from-green-300 to-green-400  ' : 'bg-gradient-to-r from-gray-200 to-gray-300 '}`}>
                             Ex
@@ -43,7 +43,7 @@ export default function ModifierChip({label, selected, isDefault, onToggle, isEx
                         </button>
 
                     </div>
-            ):<></>}
+            )}
         </div>
     )
 }

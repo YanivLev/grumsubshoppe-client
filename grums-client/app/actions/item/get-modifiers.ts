@@ -1,6 +1,6 @@
 "use server"
 
-import { getById } from "@/app/common/util/fetch";
+import { getById } from "@/app/common/util/server-requests";
 import { cache } from 'react';
 
 const fetchModifierGroups = cache(async (itemId: string) => {

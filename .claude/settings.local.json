@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:docs.clover.com)"
+      "WebSearch",
+      "WebFetch(domain:docs.clover.com)",
+      "WebFetch(domain:www.ryanpaul.dev)",
+      "WebFetch(domain:jacobnarayan.com)",
+      "WebFetch(domain:codepen.io)",
+      "Bash(npx tsc:*)",
+      "Bash(git checkout:*)",
+      "WebFetch(domain:newsroom.chipotle.com)",
+      "WebFetch(domain:mma.prnewswire.com)",
+      "WebFetch(domain:mobbin.com)"
     ]
   }
 }

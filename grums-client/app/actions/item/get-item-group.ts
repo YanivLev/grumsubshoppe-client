@@ -1,6 +1,6 @@
 "use server"
 
-import {getById} from "@/app/common/util/fetch";
+import {getById} from "@/app/common/util/server-requests";
 
 export default async function getItemGroupById(itemGroupId: string) {
     try {
