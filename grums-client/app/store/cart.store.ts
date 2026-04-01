@@ -58,6 +58,7 @@ export const useCartStore = create<ICartStore>() (
             set((state) => {
             const match = state.items.find((i) => {
                 if (i.itemId !== item.itemId) return false;
+                if ((i.note ?? '') !== (item.note ?? '')) return false;
                 if (i.modifiers.length !== item.modifiers.length) return false;
                 const sortedA = [...i.modifiers].sort((a, b) => a.id.localeCompare(b.id));
                 const sortedB = [...item.modifiers].sort((a, b) => a.id.localeCompare(b.id));

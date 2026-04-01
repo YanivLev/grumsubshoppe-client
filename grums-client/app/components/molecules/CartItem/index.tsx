@@ -14,7 +14,7 @@ interface ICartItemProps {
     note?: string;
 }
 
-export default function CartItem({ cartItemId, name, modifiers, quantity, totalPrice, itemPath, note}: ICartItemProps) {
+export default function CartItem({ cartItemId, name, modifiers, quantity, totalPrice, itemPath, note }: ICartItemProps) {
     const removeItem = useCartStore((state) => state.removeItem);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
     const [expanded, setExpanded] = useState(false);
@@ -71,11 +71,14 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                     </li>
                     )}
                 </ul>
+                
             )}
-
-            {note && (
-                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">"{note}"</p>
-            )}
+            {(() => {
+            const specialInstruction = note?.includes('\x1F') ? note.split('\x1F')[1] : undefined;
+            return specialInstruction ? (
+                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">"{specialInstruction}"</p>
+            ) : null;
+            })()}
 
             <div className="flex justify-between items-center mt-2">
                 <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">

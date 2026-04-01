@@ -28,6 +28,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
   const [note, setNote] = useState<string>("");
+  
   const MAX_QUANTITY = 100;
   const MAX_CHAR_LENGTH = 120;
 
@@ -110,7 +111,8 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       replacedName: removedMod?.name,
     };
   });  
-
+  const combinedNote = [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n');
+  console.log('Note being saved:', combinedNote)
   if (editCartItemId) {
     updateItem(editCartItemId, {
       itemId: activeItem.id,
@@ -120,7 +122,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
-      note: note || undefined,
+      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n') || undefined,
     });
     openCart();
   } else {
@@ -132,7 +134,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
-      note: note || undefined,
+      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n') || undefined,
     });
     openCart();
   }
@@ -159,7 +161,8 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     const selectedIds = entry.modifiers.map(m => m.id);
     setRemovedDefaultIds(defaultIds.filter(id => !selectedIds.includes(id)));
     setModifierGroups(modifiersByItemId[variation.id] ?? []);
-    setNote(entry.note ?? "");
+    const specialInstruction = entry.note?.split('\n').find(line => line.startsWith('\x1F'));
+    setNote(specialInstruction ? specialInstruction.slice(1) : "");
   }, [editCartItemId]);
 
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
@@ -194,6 +197,28 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   //   if (!isDefault) return `Add ${mod.name}`;
   //   return mod.name;
   // });
+
+  const printableModifiers = [
+    ...selectedModifiers.flatMap((mod) => {
+      const replacement = replacements.find(r => r.addedId === mod.id);
+      const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
+      const isExtra = extraModifierIds.includes(mod.id);
+      const isLight = lightModifierIds.includes(mod.id);
+      const isDefault = defaultIds.includes(mod.id);
+
+      if (replacement && isDefault && isExtra) return [`Extra ${mod.name}`];
+      if (replacement && isExtra) return [`Extra ${mod.name} instead of ${removedMod?.name}`];
+      if (replacement && isLight) return [`Light ${mod.name} instead of ${removedMod?.name}`];
+      if (replacement) return [`${mod.name} instead of ${removedMod?.name}`];
+      if (isLight) return [`Light ${mod.name}`];
+      if (isExtra) return [`Extra ${mod.name}`];
+      if (!isDefault) return [`Add ${mod.name}`];
+      return [];
+    }),
+    ...removedDefaultModifiers
+      .filter(mod => !replacements.find(r => r.removedId === mod.id))
+      .map(mod => `No ${mod.name}`)
+  ];
 
   const replacementIds = replacements.map(r => r.addedId);
   const totalPrice = (((activeItem?.price ?? 0) + selectedModifiers.reduce((sum, mod) => {
