@@ -27,7 +27,13 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [removedDefaultIds, setRemovedDefaultIds] = useState<string[]>([]);
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
+  const [note, setNote] = useState<string>("");
   const MAX_QUANTITY = 100;
+  const MAX_CHAR_LENGTH = 120;
+
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (event.target.value.length <= MAX_CHAR_LENGTH) setNote(event.target.value);
+  };
 
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
@@ -51,6 +57,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     setExtraModifierIds([]);
     setLightModifierIds([]);
     setModifierGroups(modifiersByItemId[activeItem.id] ?? []);
+    setNote("");
   }, [activeItem]);
 
   
@@ -113,10 +120,9 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
+      note: note || undefined,
     });
     openCart();
-
-    
   } else {
     addItem({
       itemId: activeItem.id,
@@ -126,6 +132,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
+      note: note || undefined,
     });
     openCart();
   }
@@ -152,6 +159,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     const selectedIds = entry.modifiers.map(m => m.id);
     setRemovedDefaultIds(defaultIds.filter(id => !selectedIds.includes(id)));
     setModifierGroups(modifiersByItemId[variation.id] ?? []);
+    setNote(entry.note ?? "");
   }, [editCartItemId]);
 
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
@@ -315,6 +323,27 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
             <p className="text-sm text-gray-400 text-center">No toppings selected</p>
           )}
         </div>
+
+        {activeItem && (
+          <div className="mt-2 mb-4 flex flex-col gap-2">
+            <div className="flex justify-between items-center px-1">
+              <label htmlFor="item-notes" className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Special Instructions
+              </label>
+              <span className={`text-xs font-medium ${note.length >= MAX_CHAR_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
+                {note.length} / {MAX_CHAR_LENGTH}
+              </span>
+            </div>
+            <textarea
+              id="item-notes"
+              rows={3}
+              placeholder="Add a note (e.g. label the sub, cut differently)"
+              value={note}
+              onChange={handleNoteChange}
+              className="w-full p-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all resize-none placeholder:text-gray-400"
+            />
+          </div>
+        )}
 
         <div className="flex justify-between items-center px-1 mb-4">
           <span className="font-semibold text-gray-700">Total</span>

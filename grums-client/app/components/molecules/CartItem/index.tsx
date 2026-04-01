@@ -11,9 +11,10 @@ interface ICartItemProps {
     quantity: number;
     totalPrice: number;
     itemPath: string;
+    note?: string;
 }
 
-export default function CartItem({ cartItemId, name, modifiers, quantity, totalPrice, itemPath}: ICartItemProps) {
+export default function CartItem({ cartItemId, name, modifiers, quantity, totalPrice, itemPath, note}: ICartItemProps) {
     const removeItem = useCartStore((state) => state.removeItem);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
     const [expanded, setExpanded] = useState(false);
@@ -70,6 +71,10 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                     </li>
                     )}
                 </ul>
+            )}
+
+            {note && (
+                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">"{note}"</p>
             )}
 
             <div className="flex justify-between items-center mt-2">

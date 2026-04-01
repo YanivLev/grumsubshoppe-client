@@ -145,6 +145,7 @@ export default function CartPanel() {
                                     quantity={item.quantity}
                                     totalPrice={item.totalPrice}
                                     itemPath = {item.itemPath}
+                                    note={item.note}
                                 />
                             ))}
                         </div>

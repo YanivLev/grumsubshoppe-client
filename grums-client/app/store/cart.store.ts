@@ -21,6 +21,7 @@ export interface ICartItem {
     quantity: number;
     totalPrice: number;
     itemPath: string;
+    note?: string;
 }
 
 interface ICartStore {
