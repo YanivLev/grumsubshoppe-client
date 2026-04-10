@@ -9,7 +9,6 @@ export default function CartPanel() {
     const isCartOpen = useCartStore((state) => state.isCartOpen);
     const closeCart = useCartStore((state) => state.closeCart);
     const items = useCartStore((state) => state.items);
-    const clearCart = useCartStore((state) => state.clearCart);
     const total = items.reduce((sum, item) => sum + item.totalPrice, 0);
     const [isClosing, setIsClosing] = useState(false);
     const [dragY, setDragY] = useState(0);
@@ -52,8 +51,8 @@ export default function CartPanel() {
     }
 
     function handlePlaceOrder() {
-        clearCart();
-        router.push('/order')
+        closeCart();
+        router.push('/order');
         
     }
 

@@ -34,6 +34,8 @@ interface ICartStore {
     updateQuantity: (cartItemId: string, quantity: number) => void;
     updateItem: (cartItemId: string, changes: Partial<Omit<ICartItem, 'cartItemId'>>) => void;
     clearCart: () => void;
+    hasHydrated: boolean;
+    setHasHydrated: (state: boolean) => void;
   }
 
   function generateId(): string {
@@ -52,6 +54,8 @@ export const useCartStore = create<ICartStore>() (
         (set) => ({
         items: [],
         isCartOpen: false,
+        hasHydrated: false,
+        setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
         openCart: () => set({ isCartOpen: true }),
         closeCart: () => set({ isCartOpen: false }),
         addItem: (item) =>
@@ -68,6 +72,7 @@ export const useCartStore = create<ICartStore>() (
                 mod.isLight === sortedB[idx].isLight
                 );
             });
+            
         
             if (match) {
                 const newQuantity = match.quantity + item.quantity;
@@ -105,7 +110,10 @@ export const useCartStore = create<ICartStore>() (
         clearCart: () => set({ items: [] }),
     }),
     {
-        name: 'grums-cart'
+        name: 'grums-cart',
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true);
+        }
       }
     )
 );

@@ -8,11 +8,13 @@ export async function createOrder(items: ICartItem[]) {
         itemId: item.itemId,
         unitQty: item.quantity,
         note: item.note ?? undefined,
-        modifiers: item.modifiers.map((mod) => ({
-            id: mod.id,
-            name: mod.name,
-            amount: mod.price,
-        })),
+        modifiers: item.modifiers
+            .filter(mod => !mod.isDefault || mod.isExtra || mod.isLight)
+            .map((mod) => ({
+                id: mod.id,
+                name: mod.name,
+                amount: mod.price,
+            })),
     }));
 
     return post('clover/orders', {lineItems});
