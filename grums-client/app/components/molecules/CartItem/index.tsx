@@ -76,7 +76,7 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
             {(() => {
             const specialInstruction = note?.includes('\x1F') ? note.split('\x1F')[1] : undefined;
             return specialInstruction ? (
-                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">"{specialInstruction}"</p>
+                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">{'"'}{specialInstruction}{'"'}</p>
             ) : null;
             })()}
 
