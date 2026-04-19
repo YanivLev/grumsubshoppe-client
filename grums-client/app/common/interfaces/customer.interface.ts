@@ -1,5 +1,7 @@
 export interface ICustomer {
-    id: string;
-    name: string;
-    
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    marketingAllowed?: boolean;
 }

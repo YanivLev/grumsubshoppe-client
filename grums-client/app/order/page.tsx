@@ -7,6 +7,8 @@ import { createOrder } from '@/app/actions/order/create-order';
 import { pay } from '@/app/actions/payment/pay';
 import { useRouter } from 'next/navigation';
 import { ICloverSDK } from '@/app/common/interfaces/clover-sdk.interface';
+import { createCustomer } from '@/app/actions/customer/create-customer';
+import { ICustomer } from '@/app/common/interfaces/customer.interface';
 
 declare global {
     interface Window {
@@ -61,11 +63,11 @@ export default function OrderPage() {
     const hasHydrated = useCartStore((state) => state.hasHydrated);
     const cloverRef = useRef<ICloverSDK | null>(null);
 
-    const [customerInfo, setCustomerInfo] = useState({
+    const [customerInfo, setCustomerInfo] = useState<ICustomer>({
         firstName: '',
         lastName: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
     });
 
     function handleCustomerChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -103,7 +105,11 @@ export default function OrderPage() {
             }
 
             if (existingScript) {
-                mountFields();
+                if (window.Clover) {
+                    mountFields();
+                } else {
+                    existingScript.addEventListener('load', mountFields);
+                }
                 return;
             }
             const script = document.createElement('script');
@@ -126,9 +132,9 @@ export default function OrderPage() {
         try {
             const { token } = await cloverRef.current.createToken();
             if (!token) throw new Error('Card tokenization failed');
-            const order = await createOrder(items);
+            const customer = await createCustomer(customerInfo);
+            const order = await createOrder(items, customer.id);
             await pay({ orderId: order.id, source: token, amount: total, tipAmount });
-            customn 
             clearCart();
             router.push('/order/confirmation');
         } catch (e: unknown) {
@@ -191,8 +197,8 @@ export default function OrderPage() {
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
                                     <input
                                         type="tel"
-                                        name="phone"
-                                        value={customerInfo.phone}
+                                        name="phoneNumber"
+                                        value={customerInfo.phoneNumber}
                                         onChange={handleCustomerChange}
                                         placeholder="(555) 000-0000"
                                         className={fieldCls}
