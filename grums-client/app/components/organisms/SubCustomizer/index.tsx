@@ -111,14 +111,16 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       replacedName: removedMod?.name,
     };
   });  
-  const combinedNote = [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n');
-  console.log('Note being saved:', combinedNote)
+
   if (editCartItemId) {
     updateItem(editCartItemId, {
       itemId: activeItem.id,
       name: activeItem.name,
       basePrice: activeItem.price,
       modifiers: cartModifiers,
+      removedModifiers: removedDefaultModifiers
+      .filter(mod => !replacements.find(r => r.removedId == mod.id))
+      .map(mod => ({ id: mod.id, name: mod.name})),
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
@@ -131,6 +133,9 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       name: activeItem.name,
       basePrice: activeItem.price,
       modifiers: cartModifiers,
+      removedModifiers: removedDefaultModifiers
+        .filter(mod => !replacements.find(r => r.removedId == mod.id))
+        .map(mod => ({ id: mod.id, name: mod.name})),
       quantity,
       totalPrice: Math.round(totalPrice * 100),
       itemPath,
@@ -179,6 +184,14 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       addedId: mod.id,
       removedId: removedInGroup[i]
     }));
+  });
+
+  const displayModifiers = selectedModifiers.filter(mod => {
+    const replacement = replacements.find(r => r.addedId === mod.id);
+    const isExtra = extraModifierIds.includes(mod.id);
+    const isLight = lightModifierIds.includes(mod.id);
+    const isDefault = defaultIds.includes(mod.id);
+    return !!replacement || isExtra || isLight || !isDefault;
   });
 
   // const displayModifiers = selectedModifiers.map((mod) => {
@@ -281,7 +294,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
             </span>
           </div>
 
-          {selectedModifiers.length > 0 ? (
+          {selectedModifiers.length > 0 || removedDefaultModifiers.length > 0 ? (
             <ul className="space-y-1">
               {selectedModifiers.map(mod => {
                 const replacement = replacements.find(r => r.addedId === mod.id);

@@ -11,6 +11,7 @@ import { createCustomer } from '@/app/actions/customer/create-customer';
 import { ICustomer } from '@/app/common/interfaces/customer.interface';
 import { linkCustomerToOrder } from '../actions/order/link-customer-order';
 import { deleteOrder } from '../actions/order/delete-order';
+import { deleteCustomer } from '../actions/customer/delete-customer';
 
 declare global {
     interface Window {
@@ -147,6 +148,7 @@ export default function OrderPage() {
                 clearCart();
             } catch (error) {
                 await deleteOrder(order.id);
+                await deleteCustomer(customer.id);
                 setError('Payment Failed. Please Try Again.')
             }
             // router.push('/order/confirmation');

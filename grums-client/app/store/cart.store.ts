@@ -18,6 +18,7 @@ export interface ICartItem {
     name: string;
     basePrice: number;
     modifiers: ICartModifier[];
+    removedModifiers?: {id: string; name: string;}[];
     quantity: number;
     totalPrice: number;
     itemPath: string;
