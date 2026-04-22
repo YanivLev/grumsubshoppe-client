@@ -10,6 +10,7 @@ import { ICloverSDK } from '@/app/common/interfaces/clover-sdk.interface';
 import { createCustomer } from '@/app/actions/customer/create-customer';
 import { ICustomer } from '@/app/common/interfaces/customer.interface';
 import { linkCustomerToOrder } from '../actions/order/link-customer-order';
+import { deleteOrder } from '../actions/order/delete-order';
 
 declare global {
     interface Window {
@@ -139,10 +140,15 @@ export default function OrderPage() {
             console.log(order)
             const customer = await createCustomer(customerInfo);
             console.log("Customer:", customer);
-            await linkCustomerToOrder(order.id, customer.id);
             console.log('pay payload:', { orderId: order.id, source: token, amount: total, tipAmount });
-            await pay({ orderId: order.id, source: token, amount: total, tipAmount });
-            clearCart();
+            try {
+                await linkCustomerToOrder(order.id, customer.id);
+                await pay({ orderId: order.id, source: token, amount: total, tipAmount });
+                clearCart();
+            } catch (error) {
+                await deleteOrder(order.id);
+                setError('Payment Failed. Please Try Again.')
+            }
             // router.push('/order/confirmation');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Something went wrong with the payment');
