@@ -3,7 +3,7 @@
 import { ICartItem } from '@/app/store/cart.store';
 import { post } from '@/app/common/util/server-requests';
 
-export async function createOrder(items: ICartItem[], customerId?: string) {
+export async function createOrder(items: ICartItem[]) {
     const lineItems = items.map((item) => ({
         itemId: item.itemId,
         unitQty: item.quantity,
@@ -17,8 +17,5 @@ export async function createOrder(items: ICartItem[], customerId?: string) {
             })),
     }));
 
-    return post('clover/orders', {
-        lineItems,
-        ...(customerId && { customers: [{ id: customerId }] }),
-    });
+    return post('clover/orders', {lineItems});
 }

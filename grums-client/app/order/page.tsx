@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { ICloverSDK } from '@/app/common/interfaces/clover-sdk.interface';
 import { createCustomer } from '@/app/actions/customer/create-customer';
 import { ICustomer } from '@/app/common/interfaces/customer.interface';
+import { linkCustomerToOrder } from '../actions/order/link-customer-order';
 
 declare global {
     interface Window {
@@ -131,12 +132,18 @@ export default function OrderPage() {
         setError('');
         try {
             const { token } = await cloverRef.current.createToken();
-            if (!token) throw new Error('Card tokenization failed');
+            if (!token) throw new Error('Error! Missing Details');
+
+
+            const order = await createOrder(items);
+            console.log(order)
             const customer = await createCustomer(customerInfo);
-            const order = await createOrder(items, customer.id);
+            console.log("Customer:", customer);
+            await linkCustomerToOrder(order.id, customer.id);
+            console.log('pay payload:', { orderId: order.id, source: token, amount: total, tipAmount });
             await pay({ orderId: order.id, source: token, amount: total, tipAmount });
             clearCart();
-            router.push('/order/confirmation');
+            // router.push('/order/confirmation');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Something went wrong with the payment');
         } finally {
@@ -153,7 +160,6 @@ export default function OrderPage() {
 
                 <div className="flex flex-col lg:flex-row gap-10 items-start">
 
-                    {/* ── Left: form ── */}
                     <div className="flex-1 flex flex-col gap-8">
 
                         {/* Customer Info */}
@@ -285,7 +291,7 @@ export default function OrderPage() {
 
                     </div>
 
-                    {/* ── Right: order summary ── */}
+                    {/* Order summary */}
                     <div className="w-full lg:w-96 lg:sticky lg:top-8">
                         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
 
