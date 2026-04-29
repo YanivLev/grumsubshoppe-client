@@ -30,7 +30,7 @@ export default function CartPanel() {
         dragStartY.current = e.touches[0].clientY;
         setDragTransition(false);
     }
-    
+
     function handleTouchMove(e: React.TouchEvent) {
         const delta = e.touches[0].clientY - dragStartY.current;
         if (delta > 0) setDragY(delta);
@@ -53,12 +53,12 @@ export default function CartPanel() {
     function handlePlaceOrder() {
         closeCart();
         router.push('/order');
-        
+
     }
 
     useEffect(() => {
         setIsMobile(window.innerWidth < 768);
-      
+
         if (!isCartOpen) {
           setIsVisible(false);
           return;
@@ -66,7 +66,7 @@ export default function CartPanel() {
         const t = setTimeout(() => setIsVisible(true), 10);
         return () => clearTimeout(t);
       }, [isCartOpen]);
-    
+
     if (!isCartOpen && !isVisible && !isClosing) return null;
 
       return (
@@ -86,7 +86,7 @@ export default function CartPanel() {
                 className="fixed inset-0 z-40"
                 onClick={handleClose}
             />
-    
+
             <div
                 style={{
                     transform: dragY > 0
@@ -127,7 +127,7 @@ export default function CartPanel() {
                         </button>
                     </div>
                 </div>
-    
+
                 <div className="flex-1 overflow-y-auto p-6">
                     {items.length === 0 ? (
                         <div className="text-center text-gray-400 py-20">
@@ -150,7 +150,7 @@ export default function CartPanel() {
                         </div>
                     )}
                 </div>
-    
+
                 {items.length > 0 && (
                     <div className="p-6 border-t border-gray-200">
                         <div className="flex justify-between items-center mb-4">
@@ -168,4 +168,4 @@ export default function CartPanel() {
             </div>
         </>
     );
-}    
+}

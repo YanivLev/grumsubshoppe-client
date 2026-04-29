@@ -21,6 +21,7 @@ export interface ICartItem {
     removedModifiers?: {id: string; name: string;}[];
     quantity: number;
     totalPrice: number;
+    note: string;
     itemPath: string;
     note?: string;
 }

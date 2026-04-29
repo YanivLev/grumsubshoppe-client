@@ -331,16 +331,20 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
           )}
         </div>
 
-        {activeItem && (
-          <div className="mt-2 mb-4 flex flex-col gap-2">
+        {activeItem ? (
+          <div className="mt-6 flex flex-col gap-2">
             <div className="flex justify-between items-center px-1">
-              <label htmlFor="item-notes" className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              <label
+                htmlFor="item-notes"
+                className="text-sm font-semibold text-gray-700 uppercase tracking-wider"
+              >
                 Special Instructions
               </label>
               <span className={`text-xs font-medium ${note.length >= MAX_CHAR_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
                 {note.length} / {MAX_CHAR_LENGTH}
               </span>
             </div>
+
             <textarea
               id="item-notes"
               rows={3}
@@ -350,7 +354,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
               className="w-full p-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all resize-none placeholder:text-gray-400"
             />
           </div>
-        )}
+        ) : <div></div>}
 
         <div className="flex justify-between items-center px-1 mb-4">
           <span className="font-semibold text-gray-700">Total</span>
