@@ -143,7 +143,7 @@ export default function CartPanel() {
                                     modifiers={item.modifiers}
                                     quantity={item.quantity}
                                     totalPrice={item.totalPrice}
-                                    itemPath = {item.itemPath}
+                                    itemPath={item.itemPath}
                                     note={item.note}
                                 />
                             ))}

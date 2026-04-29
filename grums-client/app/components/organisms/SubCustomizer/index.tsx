@@ -28,22 +28,21 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
   const [note, setNote] = useState<string>("");
-  
+
   const MAX_QUANTITY = 100;
   const MAX_CHAR_LENGTH = 120;
-
-  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (event.target.value.length <= MAX_CHAR_LENGTH) setNote(event.target.value);
-  };
-
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
-  
   const items = useCartStore((state) => state.items);
   const updateItem = useCartStore((state) => state.updateItem);
   const router = useRouter();
 
   const isEditInit = useRef(false);
+
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const input = event.target.value;
+    if (input.length <= MAX_CHAR_LENGTH) setNote(input);
+  };
 
   useEffect(() => {
     if (!activeItem) return;
@@ -60,8 +59,6 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
     setModifierGroups(modifiersByItemId[activeItem.id] ?? []);
     setNote("");
   }, [activeItem]);
-
-  
 
   function handleToggle(id: string) {
     const isDefault = activeItem
@@ -95,57 +92,59 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
   }
 
   function handleAddToCart() {
-  if (!activeItem) return;
+    if (!activeItem) return;
 
-  const cartModifiers = selectedModifiers.map((mod) => {
-    const replacement = replacements.find(r => r.addedId === mod.id);
-    const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
-    return {
-      id: mod.id,
-      name: mod.name,
-      price: mod.price ?? 0,
-      isDefault: defaultIds.includes(mod.id),
-      isExtra: extraModifierIds.includes(mod.id),
-      isLight: lightModifierIds.includes(mod.id),
-      isReplacement: !!replacement,
-      replacedName: removedMod?.name,
-    };
-  });  
+    const cartModifiers = selectedModifiers.map((mod) => {
+      const replacement = replacements.find(r => r.addedId === mod.id);
+      const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
+      return {
+        id: mod.id,
+        name: mod.name,
+        price: mod.price ?? 0,
+        isDefault: defaultIds.includes(mod.id),
+        isExtra: extraModifierIds.includes(mod.id),
+        isLight: lightModifierIds.includes(mod.id),
+        isReplacement: !!replacement,
+        replacedName: removedMod?.name,
+      };
+    });
 
-  if (editCartItemId) {
-    updateItem(editCartItemId, {
-      itemId: activeItem.id,
-      name: activeItem.name,
-      basePrice: activeItem.price,
-      modifiers: cartModifiers,
-      removedModifiers: removedDefaultModifiers
-      .filter(mod => !replacements.find(r => r.removedId == mod.id))
-      .map(mod => ({ id: mod.id, name: mod.name})),
-      quantity,
-      totalPrice: Math.round(totalPrice * 100),
-      itemPath,
-      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n') || undefined,
-    });
-    openCart();
-  } else {
-    addItem({
-      itemId: activeItem.id,
-      name: activeItem.name,
-      basePrice: activeItem.price,
-      modifiers: cartModifiers,
-      removedModifiers: removedDefaultModifiers
-        .filter(mod => !replacements.find(r => r.removedId == mod.id))
-        .map(mod => ({ id: mod.id, name: mod.name})),
-      quantity,
-      totalPrice: Math.round(totalPrice * 100),
-      itemPath,
-      note: [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n') || undefined,
-    });
-    openCart();
+    const combinedNote = [...printableModifiers, note ? `\x1F${note}` : ''].filter(Boolean).join('\n');
+
+    if (editCartItemId) {
+      updateItem(editCartItemId, {
+        itemId: activeItem.id,
+        name: activeItem.name,
+        basePrice: activeItem.price,
+        modifiers: cartModifiers,
+        removedModifiers: removedDefaultModifiers
+          .filter(mod => !replacements.find(r => r.removedId == mod.id))
+          .map(mod => ({ id: mod.id, name: mod.name })),
+        quantity,
+        totalPrice: Math.round(totalPrice * 100),
+        itemPath,
+        note: combinedNote || undefined,
+      });
+      openCart();
+    } else {
+      addItem({
+        itemId: activeItem.id,
+        name: activeItem.name,
+        basePrice: activeItem.price,
+        modifiers: cartModifiers,
+        removedModifiers: removedDefaultModifiers
+          .filter(mod => !replacements.find(r => r.removedId == mod.id))
+          .map(mod => ({ id: mod.id, name: mod.name })),
+        quantity,
+        totalPrice: Math.round(totalPrice * 100),
+        itemPath,
+        note: combinedNote || undefined,
+      });
+      openCart();
+    }
+
+    router.back();
   }
-
-  router.back();
-}
 
   useEffect(() => {
     if (!editCartItemId) return;
@@ -156,18 +155,17 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
 
     isEditInit.current = true;
     setActiveItem(variation);
-
     setQuantity(entry.quantity);
     setSelectedModifierIds(entry.modifiers.map(m => m.id));
     setExtraModifierIds(entry.modifiers.filter(m => m.isExtra).map(m => m.id));
     setLightModifierIds(entry.modifiers.filter(m => m.isLight).map(m => m.id));
-  
+
     const defaultIds = (DEFAULT_INGREDIENTS[variation.id] ?? []).map(d => d.id);
     const selectedIds = entry.modifiers.map(m => m.id);
     setRemovedDefaultIds(defaultIds.filter(id => !selectedIds.includes(id)));
     setModifierGroups(modifiersByItemId[variation.id] ?? []);
-    const specialInstruction = entry.note?.split('\n').find(line => line.startsWith('\x1F'));
-    setNote(specialInstruction ? specialInstruction.slice(1) : "");
+    const specialInstructions = entry.note?.split('\n').find(line => line.startsWith('\x1F'));
+    setNote(specialInstructions ? specialInstructions.slice(1) : "");
   }, [editCartItemId]);
 
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
@@ -185,31 +183,6 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       removedId: removedInGroup[i]
     }));
   });
-
-  const displayModifiers = selectedModifiers.filter(mod => {
-    const replacement = replacements.find(r => r.addedId === mod.id);
-    const isExtra = extraModifierIds.includes(mod.id);
-    const isLight = lightModifierIds.includes(mod.id);
-    const isDefault = defaultIds.includes(mod.id);
-    return !!replacement || isExtra || isLight || !isDefault;
-  });
-
-  // const displayModifiers = selectedModifiers.map((mod) => {
-  //   const replacement = replacements.find(r => r.addedId === mod.id);
-  //   const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
-  //   const isExtra = extraModifierIds.includes(mod.id);
-  //   const isLight = lightModifierIds.includes(mod.id);
-  //   const isDefault = defaultIds.includes(mod.id);
-  
-  //   if (replacement && isDefault && isExtra) return `Extra ${mod.name}`;
-  //   if (replacement && isExtra) return `Extra ${mod.name} instead of ${removedMod?.name}`;
-  //   if (replacement && isLight) return `Light ${mod.name} instead of ${removedMod?.name}`;
-  //   if (replacement) return `${mod.name} instead of ${removedMod?.name}`;
-  //   if (isLight) return `Light ${mod.name}`;
-  //   if (isExtra) return `Extra ${mod.name}`;
-  //   if (!isDefault) return `Add ${mod.name}`;
-  //   return mod.name;
-  // });
 
   const printableModifiers = [
     ...selectedModifiers.flatMap((mod) => {
@@ -302,9 +275,8 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                 const isExtra = extraModifierIds.includes(mod.id);
                 const isLight = lightModifierIds.includes(mod.id);
                 const isDefault = defaultIds.includes(mod.id);
-                
+
                 return (
-                  
                   <Fragment key={mod.id}>
                     <li className="flex justify-between text-sm text-gray-600">
                       <span>
@@ -321,9 +293,6 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
                           : !isDefault ? `Add ${mod.name}`
                           : mod.name}
                       </span>
-
-                        
-                      
                       <span>
                         {replacement && isDefault && isExtra
                           ? "Included"

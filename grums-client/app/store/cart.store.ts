@@ -9,7 +9,7 @@ interface ICartModifier {
     isExtra: boolean;
     isLight: boolean;
     isReplacement: boolean;
-    replacedName?: string;  
+    replacedName?: string;
 }
 
 export interface ICartItem {
@@ -73,8 +73,8 @@ export const useCartStore = create<ICartStore>() (
                 mod.isLight === sortedB[idx].isLight
                 );
             });
-            
-        
+
+
             if (match) {
                 const newQuantity = match.quantity + item.quantity;
                 return {
@@ -85,11 +85,11 @@ export const useCartStore = create<ICartStore>() (
                 ),
                 };
             }
-        
+
             return {
                 items: [...state.items, { ...item, cartItemId: generateId() }],
             };
-            }),      
+            }),
         removeItem: (cartItemId) =>
         set((state) => ({
             items: state.items.filter((i) => i.cartItemId !== cartItemId),

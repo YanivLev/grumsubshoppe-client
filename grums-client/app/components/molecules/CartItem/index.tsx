@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 interface ICartItemProps {
     cartItemId: string;
     name: string;
-    modifiers: {id: string, name: string, isDefault: boolean, isExtra: boolean, isLight: boolean, isReplacement: boolean, replacedName?: string}[];
+    modifiers: {id: string, name: string, price: number, isDefault: boolean, isExtra: boolean, isLight: boolean, isReplacement: boolean, replacedName?: string}[];
     quantity: number;
     totalPrice: number;
     itemPath: string;
@@ -22,16 +22,17 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
     const router = useRouter();
 
     function handleEdit() {
-        console.log('itemPath in CartItem:', itemPath);
         closeCart();
         router.push(`${itemPath}&edit=${cartItemId}`);
-      }
+    }
+
+    const specialInstructions = note?.split('\n').find(line => line.startsWith('\x1F'))?.slice(1);
 
     return (
         <div className="bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-2">
             <div className="flex justify-between items-start">
                 <span className="font-bold text-lg">{quantity}x {name}</span>
-                <div className="flex items-center gap-1 ">
+                <div className="flex items-center gap-1">
                     <button onClick={handleEdit} className="text-gray-400 hover:text-green-500 transition-colors cursor-pointer">
                         <i className="bx bx-edit text-2xl md:text-xl" />
                     </button>
@@ -41,11 +42,9 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                     >
                         <i className="bx bx-trash text-2xl md:text-xl" />
                     </button>
-
                 </div>
-
             </div>
-    
+
             {modifiers.length > 0 && (
                 <ul className="text-sm text-gray-500 space-y-0.5">
                     {(expanded ? modifiers : modifiers.slice(0, 3)).map((mod) => (
@@ -55,8 +54,8 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                         : mod.isReplacement ? `${mod.name} instead of ${mod.replacedName}`
                         : mod.isExtra ? `Extra ${mod.name}`
                         : mod.isLight ? `Light ${mod.name}`
-                        : mod.isDefault ? mod.name          // ← default ingredient, just show name
-                        : `Add ${mod.name}` 
+                        : mod.isDefault ? mod.name
+                        : `Add ${mod.name}`
                         }
                     </li>
                     ))}
@@ -70,15 +69,11 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                         </button>
                     </li>
                     )}
+                    {specialInstructions && (
+                       <p className="text-xs text-gray-400 italic mt-1 break-words">"{specialInstructions}"</p>
+                    )}
                 </ul>
-                
             )}
-            {(() => {
-            const specialInstruction = note?.includes('\x1F') ? note.split('\x1F')[1] : undefined;
-            return specialInstruction ? (
-                <p className="text-xs text-gray-400 italic border-t border-gray-100 pt-2">{'"'}{specialInstruction}{'"'}</p>
-            ) : null;
-            })()}
 
             <div className="flex justify-between items-center mt-2">
                 <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">
