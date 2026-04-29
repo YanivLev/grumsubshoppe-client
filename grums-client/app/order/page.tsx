@@ -22,6 +22,57 @@ declare global {
 const TIP_OPTIONS = [10, 15, 18, 20];
 const MAX_TIP = 999;
 
+function getNowEastern(): Date {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+}
+
+function getDayOptions() {
+    return Array.from({ length: 4 }, (_, i) => {
+        const d = getNowEastern();
+        d.setDate(d.getDate() + i);
+        const label = i == 0 ? 'Today' : i == 1 ? 'Tomorrow' : d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+        return { offset: i, label };
+    });
+}
+
+function getPickupTimeSlots(dayOffset: number): { value: string; label: string }[] {
+    const slots = [];
+    const currTime = getNowEastern();
+    let startTime: Date;
+
+    if (dayOffset === 0) {
+        const orderCutoff = new Date(currTime);
+        orderCutoff.setHours(17, 0, 0, 0);
+        if (currTime >= orderCutoff) return [];
+
+        startTime = new Date(currTime.getTime() + 20 * 60 * 1000);
+        startTime.setSeconds(0, 0);
+        const rem = startTime.getMinutes() % 15;
+        if (rem !== 0) startTime.setMinutes(startTime.getMinutes() + (15 - rem));
+        const noon = new Date(currTime);
+        noon.setHours(12, 0, 0, 0);
+        if (startTime < noon) startTime = noon;
+    } else {
+        startTime = new Date(currTime);
+        startTime.setDate(startTime.getDate() + dayOffset);
+        startTime.setHours(12, 0, 0, 0);
+    }
+
+    const cutoff = new Date(startTime);
+    cutoff.setHours(17, 30, 0, 0);
+
+    for (let i = 0; ; i++) {
+        const d = new Date(startTime.getTime() + i * 15 * 60 * 1000);
+        if (d > cutoff) break;
+        const h = d.getHours();
+        const m = d.getMinutes();
+        const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        const label = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        slots.push({ value, label });
+    }
+    return slots;
+}
+
 const cloverStyles = {
     body: {
         fontFamily: 'Roboto, Open Sans, sans-serif',
@@ -61,6 +112,8 @@ export default function OrderPage() {
 
     const [tipPercent, setTipPercent] = useState<number>(0);
     const [customTip, setCustomTip] = useState('');
+    const [selectedDay, setSelectedDay] = useState(0);
+    const [pickupTime, setPickupTime] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const hasHydrated = useCartStore((state) => state.hasHydrated);
@@ -84,14 +137,19 @@ export default function OrderPage() {
 
     const grossTotal = total + tipAmount;
 
+    const now = getNowEastern();
+    const isWithinOrderingHours = selectedDay != 0 || (now.getHours() >= 12 && now.getHours() < 17);
+
     useEffect(() => {
         if (!hasHydrated) return;
-        if (cloverRef.current) return;
 
         async function initClover() {
-            const data = await getApiKey();
             const cardNumberEl = document.getElementById('card-number');
-            if (!cardNumberEl || cardNumberEl.children.length > 0) return;
+            if (!cardNumberEl) return;
+            if (cardNumberEl.children.length > 0) return;
+            cloverRef.current = null;
+
+            const data = await getApiKey();
 
             const existingScript = document.querySelector(`script[src="${process.env.NEXT_PUBLIC_CLOVER_CHECKOUT_URL}"]`);
 
@@ -126,9 +184,22 @@ export default function OrderPage() {
         }
 
         initClover();
-    }, [hasHydrated]);
+    }, [hasHydrated, selectedDay]);
 
     async function handlePay() {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\+?[\d\s\-\(\)]{10,15}$/;    
+
+        if (!emailRegex.test(customerInfo.email)) {
+            setError('Please enter a valid email address!');
+            return;
+        }
+
+        if (!phoneRegex.test(customerInfo.phoneNumber)) {
+            setError('Please enter a valid phone number!');
+            return;
+        }
+
         if (!cloverRef.current) return;
         setIsLoading(true);
         setError('');
@@ -137,21 +208,32 @@ export default function OrderPage() {
             if (!token) throw new Error('Error! Missing Details');
 
 
-            const order = await createOrder(items);
-            console.log(order)
+            const slots = getPickupTimeSlots(selectedDay);
+            const dayLabel = getDayOptions()[selectedDay].label;
+            const timeValue = pickupTime || slots[0]?.value || '';
+            const [h, m] = timeValue.split(':').map(Number);
+            const t = new Date(); t.setHours(h, m);
+            const timeLabel = t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const order = await createOrder(items, `${dayLabel} at ${timeLabel}`);
             const customer = await createCustomer(customerInfo);
-            console.log("Customer:", customer);
-            console.log('pay payload:', { orderId: order.id, source: token, amount: total, tipAmount });
             try {
                 await linkCustomerToOrder(order.id, customer.id);
                 await pay({ orderId: order.id, source: token, amount: total, tipAmount });
+                sessionStorage.setItem('lastOrder', JSON.stringify({
+                    items,
+                    total,
+                    tipAmount,
+                    pickupNote: `${dayLabel} at ${timeLabel}`,
+                    customerName: customerInfo.firstName,
+                }));
+                clearCart();
                 clearCart();
             } catch (error) {
                 await deleteOrder(order.id);
                 await deleteCustomer(customer.id);
                 setError('Payment Failed. Please Try Again.')
             }
-            // router.push('/order/confirmation');
+            router.push('/order/confirmed');
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Something went wrong with the payment');
         } finally {
@@ -160,12 +242,17 @@ export default function OrderPage() {
     }
 
     if (!hasHydrated) return null;
+
     return (
         <div className="min-h-screen">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 lg:py-16">
 
                 <h1 className="text-2xl font-semibold text-gray-900 mb-10">Checkout</h1>
-
+                {!isWithinOrderingHours && (
+                    <div className="mb-8 px-4 py-3 bg-yellow-50 border border-yellow-200 w-fit rounded-lg text-sm text-yellow-800">
+                        We're not accepting anymore online orders for today. Our ordering hours are 12:00 PM - 5:00 PM.
+                    </div>
+                )}
                 <div className="flex flex-col lg:flex-row gap-10 items-start">
 
                     <div className="flex-1 flex flex-col gap-8">
@@ -223,6 +310,39 @@ export default function OrderPage() {
 
                         <hr className="border-gray-200" />
 
+                        <section>
+                            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Pickup Time</h2>
+                            <div className="flex flex-col gap-3">
+                                <div className="grid grid-cols-4 gap-2">
+                                    {getDayOptions().map(({ offset, label }) => (
+                                        <button
+                                            key={offset}
+                                            type="button"
+                                            onClick={() => { setSelectedDay(offset); setPickupTime(''); }}
+                                            className={`py-2 px-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer text-center ${
+                                                selectedDay === offset
+                                                    ? 'border-gray-900 bg-gray-900 text-white'
+                                                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                                            }`}
+                                        >
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <select
+                                    value={pickupTime || getPickupTimeSlots(selectedDay)[0]?.value}
+                                    onChange={(e) => setPickupTime(e.target.value)}
+                                    className={fieldCls}
+                                >
+                                    {getPickupTimeSlots(selectedDay).map((slot) => (
+                                        <option key={slot.value} value={slot.value}>{slot.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </section>
+
+                        <hr className="border-gray-200" />
+
                         {/* Tip */}
                         <section>
                             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Tip</h2>
@@ -264,39 +384,39 @@ export default function OrderPage() {
                             </div>
                         </section>
 
-                        <hr className="border-gray-200" />
-
-                        {/* Card Details */}
-                        <section>
-                            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Card Details</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className={inputCls}>
-                                    <div id="card-number" className="h-full" />
+                        <hr className="border-gray-200" />         
+                            {/* Card Details */}
+                            {isWithinOrderingHours && (
+                            <section>
+                                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Card Details</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className={inputCls}>
+                                        <div id="card-number" className="h-full"/>
+                                    </div>
+                                    <div className={inputCls}>
+                                        <div id="card-name" className="h-full" />
+                                    </div>
+                                    <div className={inputCls}>
+                                        <div id="card-date" className="h-full" />
+                                    </div>
+                                    <div className={inputCls}>
+                                        <div id="card-cvv" className="h-full" />
+                                    </div>
+                                    <div className={inputCls}>
+                                        <div id="card-zip" className="h-full" />
+                                    </div>
+                                    <div className={inputCls}>
+                                        <div id="card-street-address" className="h-full" />
+                                    </div>
                                 </div>
-                                <div className={inputCls}>
-                                    <div id="card-name" className="h-full" />
-                                </div>
-                                <div className={inputCls}>
-                                    <div id="card-date" className="h-full" />
-                                </div>
-                                <div className={inputCls}>
-                                    <div id="card-cvv" className="h-full" />
-                                </div>
-                                <div className={inputCls}>
-                                    <div id="card-zip" className="h-full" />
-                                </div>
-                                <div className={inputCls}>
-                                    <div id="card-street-address" className="h-full" />
-                                </div>
-                            </div>
-                            <p className="flex items-center gap-1.5 text-xs text-gray-400 mt-4">
-                                <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                                </svg>
-                                Your payment info is encrypted and never stored on our servers.
-                            </p>
-                        </section>
-
+                                <p className="flex items-center gap-1.5 text-xs text-gray-400 mt-4">
+                                    <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Your payment info is encrypted and never stored on our servers.
+                                </p>
+                            </section>
+                            )}
                     </div>
 
                     {/* Order summary */}
@@ -306,14 +426,32 @@ export default function OrderPage() {
                             <div className="p-6 flex flex-col gap-3">
                                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Order summary</h2>
                                 <div className="flex flex-col gap-2.5 mt-1">
-                                    {items.map((item) => (
-                                        <div key={item.cartItemId} className="flex justify-between gap-4 text-sm">
-                                            <span className="text-gray-600">
-                                                <span className="font-medium text-gray-900">{item.quantity}×</span> {item.name}
-                                            </span>
-                                            <span className="font-medium text-gray-900 shrink-0">${(item.totalPrice / 100).toFixed(2)}</span>
-                                        </div>
-                                    ))}
+                                    {items.map((item) => {
+                                        const modifierLabels = [
+                                            ...item.modifiers
+                                                .filter(m => !m.isDefault || m.isExtra || m.isLight)
+                                                .map(m => {
+                                                    if (m.isExtra) return `Extra ${m.name}`;
+                                                    if (m.isLight) return `Light ${m.name}`;
+                                                    if (m.isReplacement && m.replacedName) return `${m.name} instead of ${m.replacedName}`;
+                                                    return `Add ${m.name}`;
+                                                }),
+                                            ...(item.removedModifiers ?? []).map(m => `No ${m.name}`),
+                                        ];
+                                        const note = item.note?.split('\n').find(line => line.startsWith('\x1F'))?.slice(1);
+                                        return (
+                                            <div key={item.cartItemId} className="flex justify-between gap-4 text-sm">
+                                                <div className="text-gray-600">
+                                                    <span><span className="font-medium text-gray-900">{item.quantity}×</span> {item.name}</span>
+                                                    {modifierLabels.length > 0 && (
+                                                        <p className="text-xs text-gray-400 mt-0.5">{modifierLabels.join(', ')}</p>
+                                                    )}
+                                                    {note && <p className="text-xs text-gray-400 mt-0.5">{note}</p>}
+                                                </div>
+                                                <span className="font-medium text-gray-900 shrink-0">${(item.totalPrice / 100).toFixed(2)}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -340,7 +478,7 @@ export default function OrderPage() {
                                 )}
                                 <button
                                     onClick={handlePay}
-                                    disabled={isLoading || items.length === 0}
+                                    disabled={isLoading || items.length === 0 || !isWithinOrderingHours}
                                     className="w-full bg-gray-900 hover:bg-black text-white font-semibold py-3.5 rounded-lg text-sm transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
                                 >
                                     {isLoading ? (

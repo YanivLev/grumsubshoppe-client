@@ -3,7 +3,8 @@
 import { ICartItem } from '@/app/store/cart.store';
 import { post } from '@/app/common/util/server-requests';
 
-export async function createOrder(items: ICartItem[]) {
+export async function createOrder(items: ICartItem[], pickupTime?: string) {
+
     const lineItems = items.map((item) => ({
         itemId: item.itemId,
         unitQty: item.quantity,
@@ -24,8 +25,11 @@ export async function createOrder(items: ICartItem[]) {
                 amount: 0,
             })),
         ],
-        note: item.note?.split('\n').find(line => line.startsWith('\x1F'))?.slice(1) ?? undefined,
+        note: item.note?.split('\n').find(line => line.startsWith('\x1F'))?.slice(1),
     }));
 
-    return post('clover/orders', {lineItems});
+    return post('clover/orders', {
+        lineItems,
+        note: pickupTime,
+    });
 }
