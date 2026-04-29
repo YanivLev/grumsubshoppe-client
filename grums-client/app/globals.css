@@ -63,3 +63,6 @@ iframe + div[style*="position: fixed"] {
     display: none !important;
 }
 
+html {
+  scroll-behavior: smooth;
+}

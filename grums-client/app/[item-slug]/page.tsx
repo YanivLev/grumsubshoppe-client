@@ -48,7 +48,7 @@ export default async function EditSubPage(props: {
   const itemPath = `/${slug}?id=${groupId}`;
 
   return (
-    <main className="p-10">
+    <main className="max-w-7xl mx-auto px-6 py-10">
       {isItemGroup ? (
         <SubCustomizer
           itemGroupName={itemGroupData.name}

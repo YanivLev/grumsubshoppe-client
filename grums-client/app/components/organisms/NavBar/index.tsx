@@ -41,7 +41,7 @@ export default function Navbar() {
               </button>
               <div className="flex items-center gap-8 pl-4">
                 <div className="h-8 border-l border-gray-400"></div>
-                  <NavLink href="/menu">Menu</NavLink>
+                  <NavLink href="/#menu">Menu</NavLink>
                   <NavLink href="/about">About</NavLink>
               </div>
             </div>
@@ -55,11 +55,6 @@ export default function Navbar() {
 
             {/* RIGHT: search + order (no overlap) */}
             <div className="relative flex items-center justify-end gap-4 min-w-0">
-              <SearchBar
-                isOpen={searchOpen}
-                onOpen={() => setSearchOpen(true)}
-                onClose={() => setSearchOpen(false)}
-              />
               <CartIcon />
             </div>
           </div>
