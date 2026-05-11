@@ -20,8 +20,11 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         >
           <div className="px-4 pb-6 pt-4 space-y-4">   
             <nav className="grid gap-4 text-2xl font-medium text-black">
-              <NavLink href="#/menu" onClick={onClose} className="text-2xl">
+              <NavLink href="/#menu" onClick={onClose} className="text-2xl">
                 Menu <i className="bx bx-chevron-right text-xl" />
+              </NavLink>
+              <NavLink href="/about" onClick={onClose} className="text-2xl">
+                About <i className="bx bx-chevron-right text-xl" />
               </NavLink>
               <NavLink href="/locations" onClick={onClose} className="text-2xl">
                 Find Us <i className="bx bx-map-pin text-xl" />
