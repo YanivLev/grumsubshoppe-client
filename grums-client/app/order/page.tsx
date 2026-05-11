@@ -12,6 +12,8 @@ import { ICustomer } from '@/app/common/interfaces/customer.interface';
 import { linkCustomerToOrder } from '../actions/order/link-customer-order';
 import { deleteOrder } from '../actions/order/delete-order';
 import { deleteCustomer } from '../actions/customer/delete-customer';
+import { sendEmail } from '../actions/email/send-email';
+import { buildOrderEmailHtml } from '../common/util/order-email';
 
 declare global {
     interface Window {
@@ -137,8 +139,7 @@ export default function OrderPage() {
 
     const grossTotal = total + tipAmount;
 
-    const now = getNowEastern();
-    const isWithinOrderingHours = selectedDay != 0 || (now.getHours() >= 12 && now.getHours() < 17);
+    const isWithinOrderingHours = getPickupTimeSlots(selectedDay).length > 0;
 
     useEffect(() => {
         if (!hasHydrated) return;
@@ -226,6 +227,15 @@ export default function OrderPage() {
                     pickupNote: `${dayLabel} at ${timeLabel}`,
                     customerName: customerInfo.firstName,
                 }));
+                const html = buildOrderEmailHtml({
+                    firstName: customerInfo.firstName,
+                    items,
+                    total,
+                    tipAmount,
+                    grossTotal,
+                    pickupNote: `${dayLabel} at ${timeLabel}`,
+                });
+                await sendEmail({recipent: customerInfo.email, subject:'Order Confirmation', html});
                 clearCart();
                 clearCart();
             } catch (error) {
@@ -245,24 +255,24 @@ export default function OrderPage() {
 
     return (
         <div className="min-h-screen">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 lg:py-16">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-16">
 
-                <h1 className="text-2xl font-semibold text-gray-900 mb-10">Checkout</h1>
+                <h1 className="text-2xl font-semibold text-gray-900 mb-6">Checkout</h1>
                 {!isWithinOrderingHours && (
                     <div className="mb-8 px-4 py-3 bg-yellow-50 border border-yellow-200 w-fit rounded-lg text-sm text-yellow-800">
                         We're not accepting anymore online orders for today. Our ordering hours are 12:00 PM - 5:00 PM.
                     </div>
                 )}
-                <div className="flex flex-col lg:flex-row gap-10 items-start">
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
 
-                    <div className="flex-1 flex flex-col gap-8">
+                    <div className="flex-1 flex flex-col gap-6">
 
                         {/* Customer Info */}
                         <section>
                             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Customer Info</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">First Name</label>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">First Name</label>
                                     <input
                                         type="text"
                                         name="firstName"
@@ -273,7 +283,7 @@ export default function OrderPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Last Name</label>
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">Last Name</label>
                                     <input
                                         type="text"
                                         name="lastName"
@@ -283,8 +293,8 @@ export default function OrderPage() {
                                         className={fieldCls}
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -294,8 +304,8 @@ export default function OrderPage() {
                                         className={fieldCls}
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-medium text-gray-400 mb-1">Phone</label>
                                     <input
                                         type="tel"
                                         name="phoneNumber"
