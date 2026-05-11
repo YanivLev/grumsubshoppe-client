@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:ixd.prattsi.org)",
+      "WebFetch(domain:about.starbucks.com)",
+      "WebFetch(domain:dribbble.com)"
+    ]
+  }
+}

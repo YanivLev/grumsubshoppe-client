@@ -1,45 +1,72 @@
-import React from 'react';
-import { Typography, Divider, Stack } from '@mui/material';
-import getItemGroupById  from "@/app/[item-slug]/edit-sub/actions/get-item-group";
-import {ItemGroup as IItemGroup} from "@/app/components/menu/interfaces/item-group.interface";
-import SizeVariant from '@/app/[item-slug]/edit-sub/size-variant';
-import SubCustomizer from './edit-sub/edit-sub';
+import getItemGroupById from "@/app/actions/item/get-item-group";
+import getItemById from "@/app/actions/item/get-item";
+import SubCustomizer from '@/app/components/organisms/SubCustomizer';
+import { getModifierGroups, getModifiers } from "@/app/actions/item/get-modifiers";
+import { IModifierGroup } from "@/app/common/interfaces/modifier.interface";
+import { IItem } from "../common/interfaces/item.interface";
 
-export default async function EditSubPage(props: { 
-  params: Promise<{ 'item-slug': string }>;
-  searchParams: Promise<{ id: string }>;
-}) {
-  // 1. Await the objects first
-  const params = await props.params;
+export async function generateMetadata(props: { searchParams: Promise<{ id: string }> }) {
   const searchParams = await props.searchParams;
+  const itemGroupData = await getItemGroupById(searchParams.id);
+  return {
+    title: `${itemGroupData.name} | Grums Subshoppe`,
+  };
+}
 
-  // 2. Now you can safely access the values
+export default async function EditSubPage(props: {
+  params: Promise<{ 'item-slug': string }>;
+  searchParams: Promise<{ id: string; edit?: string; }>;
+}) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const slug = params['item-slug'];
-  const groupId = searchParams.id;
-  console.log("groupId:", groupId)
-  const itemGroupData = await getItemGroupById(groupId);
-  console.log("Item Group Data:", itemGroupData.items?.elements);
-  // Now you can fetch directly by ID without any searching!
-  // const groupDetails = await getItemGroupById(groupId);
-  // 1. DATA FETCHING (Server Side)
-  // In a real scenario, you'd do:
-  // const item = await getItemBySlug(itemSlug);
-  // const modifierGroups = await getModifierGroups(item.id);
-  
-  // Mock Data for layout building:
-  // const displayName = slug?.replace(/-/g, ' ');
-  // const itemPrice = 15; 
+  const editCartItemId = searchParams.edit;
 
-  // Define variations based on itemGroupData or mock data
-  const variations = itemGroupData.items?.elements || [];
+  const groupId = searchParams.id;
+  const itemGroupData = await getItemGroupById(groupId);
+  const isItemGroup = (itemGroupData?.items?.elements?.length ?? 0) > 0;
+
+  const variations = isItemGroup ? itemGroupData.items.elements : [];
+  const itemData = isItemGroup ? null : await getItemById(groupId);
+
+  const allVariations = isItemGroup ? variations : [itemData].filter(Boolean); //Filters nulls
+
+  const modifiersByItemId: Record<string, IModifierGroup[]> = {};
+  await Promise.all(
+    allVariations.map(async (item: IItem) => {
+      const groups = await getModifierGroups(item.id);
+      const groupsWithModifiers = await Promise.all(
+        groups.map(async (group: IModifierGroup) => {
+          const modifiers = await getModifiers(group.id);
+          return { ...group, modifiers: { elements: modifiers } };
+        })
+      );
+      modifiersByItemId[item.id] = groupsWithModifiers;
+    })
+  );
+
+  const itemPath = `/${slug}?id=${groupId}`;
 
   return (
-    <main className="p-10">
-      {/* 2. Pass the data to the Client Component for interactivity */}
-      <SubCustomizer 
-        itemGroupName={itemGroupData.name} 
-        variations={variations} 
-      />
+    <main className="max-w-7xl mx-auto px-6 py-10">
+      {isItemGroup ? (
+        <SubCustomizer
+          itemGroupName={itemGroupData.name}
+          variations={variations}
+          modifiersByItemId = {modifiersByItemId}
+          itemPath = {itemPath}
+          editCartItemId={editCartItemId}
+        />
+      ) : (
+        <SubCustomizer
+          itemName={itemData?.name}
+          variations={[itemData]}
+          initialItem={itemData}
+          modifiersByItemId = {modifiersByItemId}
+          itemPath = {itemPath}
+          editCartItemId={editCartItemId}
+        />
+      )}
     </main>
   );
 }

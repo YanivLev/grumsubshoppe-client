@@ -3,6 +3,66 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
+/* @theme {
   --breakpoint-tablet: 960px;
+} */
+
+input[type="search"]::-webkit-search-cancel-button {
+  filter: invert(48%) sepia(79%) saturate(800%) hue-rotate(86deg) brightness(50%) contrast(110%);
+  cursor: pointer;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+
+@keyframes slide-out {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+
+@keyframes slide-out-bottom {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.animate-cart-in-bottom { animation: slide-in-bottom 0.4s ease-out forwards; }
+.animate-cart-out-bottom { animation: slide-out-bottom 0.4s ease-in forwards; }
+.animate-cart-in-side   { animation: slide-in 0.4s ease-out forwards; }
+.animate-cart-out-side  { animation: slide-out 0.4s ease-in forwards; }
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fade-out 0.5s ease-in forwards;
+}
+
+.clover-footer,
+[data-clover-footer],
+iframe + div[style*="position: fixed"] {
+    display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
 }
