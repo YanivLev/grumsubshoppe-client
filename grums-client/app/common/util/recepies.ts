@@ -29,9 +29,3 @@ export const DEFAULT_INGREDIENTS: Record<string, { id: string, name: string }[]>
 
     
 };
-
-// Optional: Map of "removal" modifiers (e.g., "No Lettuce", "No Tomato")
-// This helps identify which modifiers remove ingredients vs add them
-export const REMOVAL_MAP: Record<string, string> = {
-  // Example: 'MOD_ID_no_lettuce': 'MOD_ID_lettuce',
-};
