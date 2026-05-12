@@ -9,9 +9,6 @@ import { DEFAULT_INGREDIENTS } from '@/app/common/util/recepies';
 import { useCartStore } from '@/app/store/cart.store';
 import ModifierGroupSkeleton from '@/app/components/molecules/ModifierGroupSkeleton';
 import { useRouter } from 'next/navigation';
-import QuantitySelector from '../../molecules/QuantitySelector';
-import ModifierLineItem from '../../molecules/ModifierLineItem';
-import SpecialInstructionsInput from '../../molecules/SpecialInstructions';
 import SubSidebar from '../SubSidebar';
 
 export default function SubCustomizer({ itemGroupName, itemName, variations, initialItem = null, modifiersByItemId, itemPath, editCartItemId}: {
