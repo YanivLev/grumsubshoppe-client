@@ -17,6 +17,7 @@ import { buildOrderEmailHtml } from '../common/util/order-email';
 import TipOption from '../components/molecules/TipOption';
 import DayButton from '../components/molecules/DayButton';
 import CustomerInfoForm from '../components/organisms/CustomerInfoForm';
+import PickupTimeSelector from '../components/organisms/PickupTimeSelector';
 
 declare global {
     interface Window {
@@ -282,30 +283,14 @@ export default function OrderPage() {
 
                         <hr className="border-gray-200" />
 
-                        <section>
-                            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Pickup Time</h2>
-                            <div className="flex flex-col gap-3">
-                                <div className="grid grid-cols-4 gap-2">
-                                {getDayOptions().map(({ offset, label }) => (
-                                    <DayButton
-                                        key={offset}
-                                        label={label}
-                                        selected={selectedDay === offset}
-                                        onSelect={() => { setSelectedDay(offset); setPickupTime(''); }}
-                                    />
-                                    ))}
-                                </div>
-                                <select
-                                    value={pickupTime || getPickupTimeSlots(selectedDay)[0]?.value}
-                                    onChange={(e) => setPickupTime(e.target.value)}
-                                    className={fieldCls}
-                                >
-                                    {getPickupTimeSlots(selectedDay).map((slot) => (
-                                        <option key={slot.value} value={slot.value}>{slot.label}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </section>
+                        <PickupTimeSelector
+                            dayOptions={getDayOptions()}
+                            timeSlots={getPickupTimeSlots(selectedDay)}
+                            selectedDay={selectedDay}
+                            pickupTime={pickupTime}
+                            onDayChange={(offset) => { setSelectedDay(offset); setPickupTime(''); }}
+                            onTimeChange={setPickupTime}
+                        />
 
                         <hr className="border-gray-200" />
 
