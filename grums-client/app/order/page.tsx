@@ -16,6 +16,7 @@ import { sendEmail } from '../actions/email/send-email';
 import { buildOrderEmailHtml } from '../common/util/order-email';
 import TipOption from '../components/molecules/TipOption';
 import DayButton from '../components/molecules/DayButton';
+import CustomerInfoForm from '../components/organisms/CustomerInfoForm';
 
 declare global {
     interface Window {
@@ -277,56 +278,7 @@ export default function OrderPage() {
 
                     <div className="flex-1 flex flex-col gap-6">
 
-                        {/* Customer Info */}
-                        <section>
-                            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Customer Info</h2>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">First Name</label>
-                                    <input
-                                        type="text"
-                                        name="firstName"
-                                        value={customerInfo.firstName}
-                                        onChange={handleCustomerChange}
-                                        placeholder="Jane"
-                                        className={fieldCls}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">Last Name</label>
-                                    <input
-                                        type="text"
-                                        name="lastName"
-                                        value={customerInfo.lastName}
-                                        onChange={handleCustomerChange}
-                                        placeholder="Doe"
-                                        className={fieldCls}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={customerInfo.email}
-                                        onChange={handleCustomerChange}
-                                        placeholder="jane@example.com"
-                                        className={fieldCls}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-medium text-gray-400 mb-1">Phone</label>
-                                    <input
-                                        type="tel"
-                                        name="phoneNumber"
-                                        value={customerInfo.phoneNumber}
-                                        onChange={handleCustomerChange}
-                                        placeholder="(555) 000-0000"
-                                        className={fieldCls}
-                                    />
-                                </div>
-                            </div>
-                        </section>
+                        <CustomerInfoForm value={customerInfo} onChange={handleCustomerChange} />
 
                         <hr className="border-gray-200" />
 
