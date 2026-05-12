@@ -3,7 +3,10 @@
     "allow": [
       "WebFetch(domain:ixd.prattsi.org)",
       "WebFetch(domain:about.starbucks.com)",
-      "WebFetch(domain:dribbble.com)"
+      "WebFetch(domain:dribbble.com)",
+      "Read(//Users/yanivlev/Documents/Grums/grums-server/grums-server/src/**)",
+      "Bash(ls -la /Users/yanivlev/Documents/Grums/grums-server/grums-server/ | grep env)",
+      "Read(//Users/yanivlev/Documents/Grums/grums-server/grums-server/**)"
     ]
   }
 }
