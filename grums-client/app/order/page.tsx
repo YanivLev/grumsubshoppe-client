@@ -15,6 +15,7 @@ import { deleteCustomer } from '../actions/customer/delete-customer';
 import { sendEmail } from '../actions/email/send-email';
 import { buildOrderEmailHtml } from '../common/util/order-email';
 import TipOption from '../components/molecules/TipOption';
+import DayButton from '../components/molecules/DayButton';
 
 declare global {
     interface Window {
@@ -333,19 +334,13 @@ export default function OrderPage() {
                             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Pickup Time</h2>
                             <div className="flex flex-col gap-3">
                                 <div className="grid grid-cols-4 gap-2">
-                                    {getDayOptions().map(({ offset, label }) => (
-                                        <button
-                                            key={offset}
-                                            type="button"
-                                            onClick={() => { setSelectedDay(offset); setPickupTime(''); }}
-                                            className={`py-2 px-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer text-center ${
-                                                selectedDay === offset
-                                                    ? 'border-gray-900 bg-gray-900 text-white'
-                                                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                            }`}
-                                        >
-                                            {label}
-                                        </button>
+                                {getDayOptions().map(({ offset, label }) => (
+                                    <DayButton
+                                        key={offset}
+                                        label={label}
+                                        selected={selectedDay === offset}
+                                        onSelect={() => { setSelectedDay(offset); setPickupTime(''); }}
+                                    />
                                     ))}
                                 </div>
                                 <select
