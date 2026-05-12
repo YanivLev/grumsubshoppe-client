@@ -10,6 +10,7 @@ import { useCartStore } from '@/app/store/cart.store';
 import ModifierGroupSkeleton from '@/app/components/molecules/ModifierGroupSkeleton';
 import { useRouter } from 'next/navigation';
 import QuantitySelector from '../../molecules/QuantitySelector';
+import ModifierLineItem from '../../molecules/ModifierLineItem';
 
 export default function SubCustomizer({ itemGroupName, itemName, variations, initialItem = null, modifiersByItemId, itemPath, editCartItemId}: {
   itemGroupName?: string,
@@ -269,49 +270,19 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
 
           {selectedModifiers.length > 0 || removedDefaultModifiers.length > 0 ? (
             <ul className="space-y-1">
-              {selectedModifiers.map(mod => {
+             {selectedModifiers.map(mod => {
                 const replacement = replacements.find(r => r.addedId === mod.id);
                 const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
-                const isExtra = extraModifierIds.includes(mod.id);
-                const isLight = lightModifierIds.includes(mod.id);
-                const isDefault = defaultIds.includes(mod.id);
-
                 return (
-                  <Fragment key={mod.id}>
-                    <li className="flex justify-between text-sm text-gray-600">
-                      <span>
-                        {replacement && isDefault && isExtra
-                          ? `Extra ${mod.name}`
-                          : replacement && isExtra
-                          ? `Extra ${mod.name} instead of ${removedMod?.name}`
-                          : replacement && isLight
-                          ? `Light ${mod.name} instead of ${removedMod?.name}`
-                          : replacement
-                          ? `${mod.name} instead of ${removedMod?.name}`
-                          : isLight ? `Light ${mod.name}`
-                          : isExtra ? `Extra ${mod.name}`
-                          : !isDefault ? `Add ${mod.name}`
-                          : mod.name}
-                      </span>
-                      <span>
-                        {replacement && isDefault && isExtra
-                          ? "Included"
-                          : replacement && isExtra
-                          ? `+$${(mod.price / 100).toFixed(2)}`
-                          : replacement
-                          ? ""
-                          : isExtra
-                            ? isDefault
-                              ? `+$${(mod.price / 100).toFixed(2)}`
-                              : `+$${((mod.price / 100) * 2).toFixed(2)}`
-                          : defaultIds.includes(mod.id)
-                          ? "Included"
-                          : mod.price > 0
-                          ? `+$${(mod.price / 100).toFixed(2)}`
-                          : "$0.00"}
-                      </span>
-                    </li>
-                  </Fragment>
+                  <ModifierLineItem
+                    key={mod.id}
+                    name={mod.name}
+                    price={mod.price}
+                    isDefault={defaultIds.includes(mod.id)}
+                    isExtra={extraModifierIds.includes(mod.id)}
+                    isLight={lightModifierIds.includes(mod.id)}
+                    replacement={removedMod ? { removedName: removedMod.name } : null}
+                  />
                 );
               })}
               {removedDefaultModifiers.filter(mod => !replacements.find(r => r.removedId === mod.id)).length > 0 && (
