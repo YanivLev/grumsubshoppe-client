@@ -18,6 +18,7 @@ import TipOption from '../components/molecules/TipOption';
 import DayButton from '../components/molecules/DayButton';
 import CustomerInfoForm from '../components/organisms/CustomerInfoForm';
 import PickupTimeSelector from '../components/organisms/PickupTimeSelector';
+import TipSelector from '../components/organisms/TipSelector';
 
 declare global {
     interface Window {
@@ -294,39 +295,13 @@ export default function OrderPage() {
 
                         <hr className="border-gray-200" />
 
-                        {/* Tip */}
-                        <section>
-                            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Tip</h2>
-                            <div className="grid grid-cols-4 gap-2 mb-3">
-                            {TIP_OPTIONS.map((pct) => (
-                                <TipOption
-                                    key={pct}
-                                    percent={pct}
-                                    dollarAmount={Math.round(total * pct / 100) / 100}
-                                    selected={tipPercent === pct}
-                                    onSelect={() => { setTipPercent(tipPercent === pct ? 0 : pct); setCustomTip(''); }}
-                                />
-                            ))}
-                            </div>
-                            <div className="relative">
-                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">$</span>
-                                <input
-                                    type="number"
-                                    placeholder="Custom amount"
-                                    value={customTip}
-                                    onChange={(e) => {
-                                        const tip_val = e.target.value;
-                                        const digits = tip_val.replace('.', '').replace('-', '');
-                                        if (digits.length > 4) return;
-                                        const num_tip = parseFloat(tip_val);
-                                        if (!isNaN(num_tip) && (num_tip < 0 || num_tip > MAX_TIP)) return;
-                                        setCustomTip(tip_val);
-                                        setTipPercent(0);
-                                    }}
-                                    className="w-full h-12 pl-8 pr-4 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white outline-none focus:ring-1 focus:ring-black focus:border-black transition-shadow placeholder:text-gray-400"
-                                />
-                            </div>
-                        </section>
+                        <TipSelector
+                            total={total}
+                            tipPercent={tipPercent}
+                            customTip={customTip}
+                            onPercentSelect={(pct) => { setTipPercent(tipPercent === pct ? 0 : pct); setCustomTip(''); }}
+                            onCustomTipChange={(val) => { setCustomTip(val); setTipPercent(0); }}
+                        />
 
                         <hr className="border-gray-200" />         
                             {/* Card Details */}
