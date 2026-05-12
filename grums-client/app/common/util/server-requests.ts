@@ -23,11 +23,13 @@ export const post = async (path: string, body: unknown) => {
     });
     if (!res.ok) {
         const messages: Record<number, string> = {
+            402: 'Your card was declined. Please try a different card.',
+            409: 'Payment could not be completed. Please check your order and try again.',
             400: 'Invalid request. Please check your details and try again.',
             401: 'Authentication failed. Please refresh and try again.',
             404: 'The requested resource was not found.',
             500: 'Something went wrong on our end. Please try again.',
-        };
+        };        
         throw new Error(messages[res.status] ?? 'Something went wrong. Please try again.');
     }
     return res.json();

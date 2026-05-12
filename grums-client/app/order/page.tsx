@@ -219,7 +219,7 @@ export default function OrderPage() {
             const customer = await createCustomer(customerInfo);
             try {
                 await linkCustomerToOrder(order.id, customer.id);
-                await pay({ orderId: order.id, source: token, amount: total, tipAmount });
+                await pay({ orderId: order.id, source: token, amount: grossTotal, tipAmount });
                 sessionStorage.setItem('lastOrder', JSON.stringify({
                     items,
                     total,
@@ -237,13 +237,13 @@ export default function OrderPage() {
                 });
                 await sendEmail({recipent: customerInfo.email, subject:'Order Confirmation', html});
                 clearCart();
-                clearCart();
+                router.push('/order/confirmed');
             } catch (error) {
                 await deleteOrder(order.id);
                 await deleteCustomer(customer.id);
                 setError('Payment Failed. Please Try Again.')
             }
-            router.push('/order/confirmed');
+            
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : 'Something went wrong with the payment');
         } finally {
