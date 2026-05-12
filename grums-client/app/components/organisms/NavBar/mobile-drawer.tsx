@@ -26,7 +26,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               <NavLink href="/about" onClick={onClose} className="text-2xl">
                 About <i className="bx bx-chevron-right text-xl" />
               </NavLink>
-              <NavLink href="/locations" onClick={onClose} className="text-2xl">
+              <NavLink href='' onClick={() => window.open('https://maps.app.goo.gl/qeSogw7jGB7Jp6QV7')}
+              className="text-2xl">
                 Find Us <i className="bx bx-map-pin text-xl" />
               </NavLink>
             </nav>
