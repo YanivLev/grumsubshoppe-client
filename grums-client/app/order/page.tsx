@@ -216,10 +216,18 @@ export default function OrderPage() {
             const t = new Date(); t.setHours(h, m);
             const timeLabel = t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
             const order = await createOrder(items, `${dayLabel} at ${timeLabel}`);
-            const customer = await createCustomer(customerInfo);
+            if (!order?.id) throw new Error('Failed to create order. Please try again.');
+            let customer;
+            try {
+                customer = await createCustomer(customerInfo);
+            } catch (e) {
+                await deleteOrder(order.id);
+                setError(e instanceof Error ? e.message : 'Something went wrong.');
+                return;
+            }
             try {
                 await linkCustomerToOrder(order.id, customer.id);
-                await pay({ orderId: order.id, source: token, amount: grossTotal, tipAmount });
+                await pay({ orderId: order.id, source: token, amount: order.total, tipAmount });
                 sessionStorage.setItem('lastOrder', JSON.stringify({
                     items,
                     total,
@@ -239,13 +247,13 @@ export default function OrderPage() {
                 clearCart();
                 router.push('/order/confirmed');
             } catch (error) {
-                await deleteOrder(order.id);
+                await deleteOrder(order.id); 
                 await deleteCustomer(customer.id);
                 setError('Payment Failed. Please Try Again.')
             }
             
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : 'Something went wrong with the payment');
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Something went wrong with the payment');
         } finally {
             setIsLoading(false);
         }

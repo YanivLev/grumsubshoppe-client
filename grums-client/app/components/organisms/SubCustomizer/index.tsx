@@ -1,4 +1,3 @@
-// app/components/organisms/SubCustomizer/index.tsx
 'use client';
 
 import { useState, useEffect, Fragment, useRef } from 'react';
@@ -143,7 +142,7 @@ export default function SubCustomizer({ itemGroupName, itemName, variations, ini
       openCart();
     }
 
-    router.back();
+    router.push("/#menu");
   }
 
   useEffect(() => {

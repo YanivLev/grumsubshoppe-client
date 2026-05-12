@@ -29,7 +29,7 @@ export const post = async (path: string, body: unknown) => {
             401: 'Authentication failed. Please refresh and try again.',
             404: 'The requested resource was not found.',
             500: 'Something went wrong on our end. Please try again.',
-        };        
+        };
         throw new Error(messages[res.status] ?? 'Something went wrong. Please try again.');
     }
     return res.json();
