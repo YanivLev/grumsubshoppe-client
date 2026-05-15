@@ -9,11 +9,7 @@ import { IItem } from '@/app/common/interfaces/item.interface';
 import ItemCard from '@/app/components/molecules/ItemCard';
 import Search from '../../molecules/SearchBar';
 
-
-
-const categoryOrder = ["Cold Subs", "Hot Subs", "Salads", "Sides", "Specialties"];
-
-export default function MenuManager({ initialItemGroups = [], initialItems = [] }: {
+export default function MenuManager({ initialCategories}: {
   initialItemGroups: IItemGroup[],
   initialItems: IItem[]}) {
 
