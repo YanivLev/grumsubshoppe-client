@@ -177,29 +177,34 @@ export default function OrderPage() {
             try {
                 await linkCustomerToOrder(order.id, customer.id);
                 await pay({ orderId: order.id, source: token, amount: order.total, tipAmount });
-                sessionStorage.setItem('lastOrder', JSON.stringify({
-                    items,
-                    total,
-                    tipAmount,
-                    pickupNote: `${dayLabel} at ${timeLabel}`,
-                    customerName: customerInfo.firstName,
-                }));
-                const html = buildOrderEmailHtml({
-                    firstName: customerInfo.firstName,
-                    items,
-                    total,
-                    tipAmount,
-                    grossTotal,
-                    pickupNote: `${dayLabel} at ${timeLabel}`,
-                });
-                await sendEmail({recipent: customerInfo.email, subject:'Order Confirmation', html});
-                clearCart();
-                router.push('/order/confirmed');
             } catch (error) {
-                await deleteOrder(order.id); 
+                await deleteOrder(order.id);
                 await deleteCustomer(customer.id);
-                setError('Payment Failed. Please Try Again.')
+                setError('Payment Failed. Please Try Again.');
+                return;
             }
+            sessionStorage.setItem('lastOrder', JSON.stringify({
+                items,
+                total,
+                tipAmount,
+                pickupNote: `${dayLabel} at ${timeLabel}`,
+                customerName: customerInfo.firstName,
+            }));
+            const html = buildOrderEmailHtml({
+                firstName: customerInfo.firstName,
+                items,
+                total,
+                tipAmount,
+                grossTotal,
+                pickupNote: `${dayLabel} at ${timeLabel}`,
+            });
+            try {
+                await sendEmail({ recipient: customerInfo.email, subject: 'Order Confirmation', html });
+            } catch {
+                // email failure doesn't affect the order
+            }
+            clearCart();
+            router.push('/order/confirmed');
             
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Something went wrong with the payment');

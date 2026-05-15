@@ -44,7 +44,7 @@ export default function MenuManager({ initialCategories }: {
         <div className="flex justify-center">
           <Stack spacing={4}>
             {filteredItems.map((item) => (
-              <ItemCard key={item.id} itemGroup={item} description="" />
+              <ItemCard key={item.id} item={item} />
 
             ))}
           </Stack>
