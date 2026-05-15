@@ -1,99 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Stack } from '@mui/material';
-import PillButton from "@/app/components/atoms/PillButton"
-import { DEFAULT_INGREDIENTS } from '@/app/common/util/recepies';
-import { IItemGroup } from '@/app/common/interfaces/item-group.interface';
+import PillButton from "@/app/components/atoms/PillButton";
 import { IItem } from '@/app/common/interfaces/item.interface';
+import { ICategory } from '@/app/common/interfaces/category.interface';
 import ItemCard from '@/app/components/molecules/ItemCard';
 import Search from '../../molecules/SearchBar';
+import getItemsByCategory  from '@/app/actions/menu/get-items-by-category';
 
-export default function MenuManager({ initialCategories}: {
-  initialItemGroups: IItemGroup[],
-  initialItems: IItem[]}) {
+export default function MenuManager({ initialCategories }: {
+  initialCategories: ICategory[]}) {
 
-    const [searchValue, setSearchValue] = useState(''); 
+    const [searchValue, setSearchValue] = useState('');
+    const [items, setItems] = useState<IItem[]>([]);
+    const [activeCategory, setActiveCategory] = useState(initialCategories[0]);
 
-    const categories = Array.from(
-      new Set(
-        initialItemGroups
-          ?.map((group) => group.items?.elements?.[0]?.categories?.elements?.[0]?.name)
-          .filter(Boolean)
-      )
-    ).sort((a, b) => {
-      const indexA = categoryOrder.indexOf(a as string);
-      const indexB = categoryOrder.indexOf(b as string);
-      return indexA === -1 ? 1 : indexB === -1 ? -1 : indexA - indexB;
-    }) as string[];
+    useEffect(() => {
+      if (!activeCategory?.id) return;
+      getItemsByCategory(activeCategory.id).then(setItems);
+    }, [activeCategory]);
 
-    const groupItemIds = new Set(
-      initialItemGroups.flatMap((group: IItemGroup) =>
-        group.items?.elements?.map((item: IItem) => item.id) ?? []
-      )
+    const filteredItems = items.filter((item) =>
+      item.name.toLowerCase().includes(searchValue.toLowerCase())
     );
-
-    const standaloneItems = initialItems.filter((item: IItem) => !groupItemIds.has(item.id));
-
-    const itemCategories = standaloneItems
-    .map((item: IItem) => item.categories?.elements?.[0]?.name)
-    .filter(Boolean);
-
-    const allCategories = Array.from(new Set([...categories, ...itemCategories]))
-      .sort((a, b) => {
-        const indexA = categoryOrder.indexOf(a as string);
-        const indexB = categoryOrder.indexOf(b as string);
-        return indexA === -1 ? 1 : indexB === -1 ? -1 : indexA - indexB;
-      }) as string[];
-
-    const [activeCategory, setActiveCategory] = useState(allCategories[0] || "");
-
-    const filteredGroups = initialItemGroups.filter((group) => {
-      const groupCat = group.items?.elements?.[0]?.categories?.elements?.[0]?.name;
-      const matchesCategory = searchValue ? true : groupCat === activeCategory;
-      const matchesSearch = group.name.toLowerCase().includes(searchValue.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-
-    const filteredItems = standaloneItems.filter((item: IItem) => {
-      const matchesCategory = searchValue ? true : item.categories?.elements?.[0]?.name === activeCategory;
-      const matchesSearch = item.name.toLowerCase().includes(searchValue.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-
-    const handleSearch = (value: string) => {
-      setSearchValue(value);
-    }
 
     return (
       <div>
-        {/* Category Buttons */}
         <div className="flex flex-wrap justify-center gap-2 md:gap-5 mb-8">
-          {allCategories.map((cat) => (
+          {initialCategories.map((cat) => (
             <PillButton
-              key={cat}
-              active={activeCategory === cat}
+              key={cat.id}
+              active={activeCategory?.id === cat.id}
               onClick={() => setActiveCategory(cat)}
             >
-              {cat}
+              {cat.name}
             </PillButton>
           ))}
         </div>
         <div className="mb-8">
-          <Search onSearch={handleSearch} />  
+          <Search onSearch={(v) => setSearchValue(v)} />
         </div>
-        {/* Map over Groups */}
         <div className="flex justify-center">
           <Stack spacing={4}>
-          {filteredGroups.map((group) => {
-            const firstItemId = group.items?.elements?.[0]?.id;
-            const description = (DEFAULT_INGREDIENTS[firstItemId] ?? [])
-            .map(mod => mod.name).join(', ');
-            return <ItemCard key={group.id} itemGroup={group} description={description} />;
-          })}
-          {filteredItems.map((item: IItem) => (
-            <ItemCard key={item.id} itemGroup={item} description="" />
-          ))}
+            {filteredItems.map((item) => (
+              <ItemCard key={item.id} itemGroup={item} description="" />
+
+            ))}
           </Stack>
         </div>
       </div>
