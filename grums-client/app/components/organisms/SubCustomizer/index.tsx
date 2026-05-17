@@ -22,6 +22,8 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
   const [extraModifierIds, setExtraModifierIds] = useState<string[]>([]);
   const [lightModifierIds, setLightModifierIds] = useState<string[]>([]);
   const [note, setNote] = useState<string>("");
+  const halfWholeRef = useRef<HTMLDivElement>(null);
+  const [showSizeError, setShowSizeError] = useState(false);
 
   const MAX_QUANTITY = 100;
   const addItem = useCartStore((state) => state.addItem);
@@ -53,18 +55,27 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
     setNote(specialInstructions ? specialInstructions.slice(1) : "");
   }, [editCartItemId]);
 
+  const halfWholeGroup = modifierGroups.find(g => g.name === 'Half/Whole');
+  const halfWholeIds = halfWholeGroup?.modifiers?.elements?.map(m => m.id) ?? [];
+
   function handleToggle(id: string) {
     const isDefault = (DEFAULT_INGREDIENTS[item.id] ?? []).map(d => d.id).includes(id);
     const isCurrentlySelected = selectedModifierIds.includes(id);
+    const isSizeMod = halfWholeIds.includes(id);
 
     if (isCurrentlySelected) {
+      if (isSizeMod) return;
       setSelectedModifierIds(prev => prev.filter(x => x !== id));
       if (isDefault) setRemovedDefaultIds(prev => [...prev, id]);
       setExtraModifierIds(prev => prev.filter(x => x !== id));
       setLightModifierIds(prev => prev.filter(x => x !== id));
     } else {
-      setSelectedModifierIds(prev => [...prev, id]);
-      if (isDefault) setRemovedDefaultIds(prev => prev.filter(x => x !== id));
+      if (isSizeMod) {
+        setSelectedModifierIds(prev => [...prev.filter(x => !halfWholeIds.includes(x)), id]);
+      } else {
+        setSelectedModifierIds(prev => [...prev, id]);
+        if (isDefault) setRemovedDefaultIds(prev => prev.filter(x => x !== id));
+      }
     }
   }
 
@@ -85,6 +96,13 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
   const selectedModifiers = allModifiers.filter(mod => selectedModifierIds.includes(mod.id));
   const defaultIds = (DEFAULT_INGREDIENTS[item.id] ?? []).map(d => d.id);
+
+  const selectedSizeMod = allModifiers.find(mod => halfWholeIds.includes(mod.id) && selectedModifierIds.includes(mod.id));
+  const cartItemName = selectedSizeMod ? `${selectedSizeMod.name} ${item.name}` : item.name;
+  const displayPrice = selectedSizeMod != null ? ((item.price ?? 0) + (selectedSizeMod.price ?? 0)) / 100 : null;
+  const hasSelectedSize = halfWholeIds.some(id => selectedModifierIds.includes(id));
+  const sidebarModifiers = selectedModifiers.filter(mod => !halfWholeIds.includes(mod.id));
+  const otherGroups = modifierGroups.filter(g => g.name !== 'Half/Whole');
   const removedDefaultModifiers = allModifiers.filter(mod => removedDefaultIds.includes(mod.id));
   const replacements = modifierGroups.flatMap(group => {
     const groupIds = group.modifiers?.elements?.map(m => m.id) ?? [];
@@ -99,7 +117,7 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
   });
 
   const printableModifiers = [
-    ...selectedModifiers.flatMap((mod) => {
+    ...selectedModifiers.filter(mod => !halfWholeIds.includes(mod.id)).flatMap((mod) => {
       const replacement = replacements.find(r => r.addedId === mod.id);
       const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
       const isExtra = extraModifierIds.includes(mod.id);
@@ -135,6 +153,18 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
   }, 0)) / 100) * quantity;
 
   function handleAddToCart() {
+    if (halfWholeGroup) {
+      const hasSelected = halfWholeIds.some(id => selectedModifierIds.includes(id));
+      if (!hasSelected) {
+        setShowSizeError(true);
+        halfWholeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => setShowSizeError(false), 2500);
+        return;
+      }
+    }
+
+
+    
     const cartModifiers = selectedModifiers.map((mod) => {
       const replacement = replacements.find(r => r.addedId === mod.id);
       const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
@@ -155,7 +185,7 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
     if (editCartItemId) {
       updateItem(editCartItemId, {
         itemId: item.id,
-        name: item.name,
+        name: cartItemName,
         basePrice: item.price,
         modifiers: cartModifiers,
         removedModifiers: removedDefaultModifiers
@@ -169,7 +199,7 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
     } else {
       addItem({
         itemId: item.id,
-        name: item.name,
+        name: cartItemName,
         basePrice: item.price,
         modifiers: cartModifiers,
         removedModifiers: removedDefaultModifiers
@@ -194,27 +224,55 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
             <ModifierGroupSkeleton />
             <ModifierGroupSkeleton />
           </>
-        ) : modifierGroups.map((group) => (
-          <ModifierGroup
-            key={group.id}
-            group={group}
-            selectedIds={selectedModifierIds}
-            defaultIds={defaultIds}
-            onToggle={handleToggle}
-            onExtra={handleExtra}
-            extraIds={extraModifierIds}
-            onLight={handleLight}
-            lightIds={lightModifierIds}
-          />
-        ))}
+        ) : (
+          <>
+            {halfWholeGroup && (
+              <div ref={halfWholeRef}>
+                <ModifierGroup
+                  key={halfWholeGroup.id}
+                  group={halfWholeGroup}
+                  selectedIds={selectedModifierIds}
+                  defaultIds={defaultIds}
+                  onToggle={handleToggle}
+                  onExtra={handleExtra}
+                  extraIds={extraModifierIds}
+                  onLight={handleLight}
+                  lightIds={lightModifierIds}
+                  hasError={showSizeError}
+                  isSizeGroup={true}
+                />
+              </div>
+            )}
+            {hasSelectedSize ? otherGroups.map((group) => (
+              <ModifierGroup
+                key={group.id}
+                group={group}
+                selectedIds={selectedModifierIds}
+                defaultIds={defaultIds}
+                onToggle={handleToggle}
+                onExtra={handleExtra}
+                extraIds={extraModifierIds}
+                onLight={handleLight}
+                lightIds={lightModifierIds}
+              />
+            )) : (
+              <>
+                <ModifierGroupSkeleton />
+                <ModifierGroupSkeleton />
+              </>
+            )}
+          </>
+        )}
       </div>
 
       <SubSidebar
         activeItem={item}
+        displayName={cartItemName}
+        displayPrice={displayPrice}
         quantity={quantity}
         totalPrice={totalPrice}
         note={note}
-        selectedModifiers={selectedModifiers}
+        selectedModifiers={sidebarModifiers}
         removedDefaultModifiers={removedDefaultModifiers}
         allModifiers={allModifiers}
         replacements={replacements}
