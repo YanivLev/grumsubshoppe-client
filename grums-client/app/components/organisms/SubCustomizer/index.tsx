@@ -45,7 +45,10 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
 
     isEditInit.current = true;
     setQuantity(entry.quantity);
-    setSelectedModifierIds(entry.modifiers.map(m => m.id));
+    const sizeElements = halfWholeGroup?.modifiers?.elements ?? [];
+    const matchedSize = sizeElements.find(m => entry.name.startsWith(m.name + ' '));
+    const sizeIds = matchedSize ? [matchedSize.id] : [];
+    setSelectedModifierIds([...entry.modifiers.map(m => m.id), ...sizeIds]);
     setExtraModifierIds(entry.modifiers.filter(m => m.isExtra).map(m => m.id));
     setLightModifierIds(entry.modifiers.filter(m => m.isLight).map(m => m.id));
 
@@ -165,7 +168,7 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
 
 
     
-    const cartModifiers = selectedModifiers.map((mod) => {
+    const cartModifiers = selectedModifiers.filter(mod => mod.id !== selectedSizeMod?.id).map((mod) => {
       const replacement = replacements.find(r => r.addedId === mod.id);
       const removedMod = replacement ? allModifiers.find(m => m.id === replacement.removedId) : null;
       return {
