@@ -10,6 +10,8 @@ interface Replacement { addedId: string; removedId: string; }
 
 interface SubSidebarProps {
   activeItem: IItem | null;
+  displayName?: string;
+  displayPrice?: number | null;
   quantity: number;
   totalPrice: number;
   note: string;
@@ -29,7 +31,7 @@ interface SubSidebarProps {
 const MAX_QUANTITY = 10;
 
 export default function SubSidebar({
-  activeItem, quantity, totalPrice, note, selectedModifiers,
+  activeItem, displayName, displayPrice, quantity, totalPrice, note, selectedModifiers,
   removedDefaultModifiers, allModifiers, replacements, defaultIds,
   extraModifierIds, lightModifierIds, editCartItemId,
   onNoteChange, onQuantityChange, onAddToCart,
@@ -42,10 +44,10 @@ export default function SubSidebar({
         <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
             {quantity > 1 && <span className="text-md font-semibold">{quantity}x</span>}
-            <span className="text-lg font-semibold">{activeItem?.name ?? 'No size selected'}</span>
+            <span className="text-lg font-semibold">{displayName ?? activeItem?.name ?? 'No size selected'}</span>
           </div>
           <span className="text-lg font-bold">
-            {activeItem ? `$${(activeItem.price / 100).toFixed(2)}` : ''}
+            {displayPrice != null ? `$${displayPrice.toFixed(2)}` : '--.--'}
           </span>
         </div>
 
