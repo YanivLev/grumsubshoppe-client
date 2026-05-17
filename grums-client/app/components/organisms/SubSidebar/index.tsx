@@ -80,7 +80,7 @@ export default function SubSidebar({
               ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-400 text-center">No toppings selected</p>
+          <p className="text-sm text-gray-400 text-center">{displayPrice != null ? 'No toppings selected' : 'No size selected'}</p>
         )}
       </div>
 
