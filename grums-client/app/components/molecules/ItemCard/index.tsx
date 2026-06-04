@@ -4,9 +4,10 @@ import Box from "@mui/material/Box";
 import { Stack } from "@mui/material";
 import Link from "next/link";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { IItemGroup } from "@/app/common/interfaces/item-group.interface";
 
 interface ItemCardProps {
-    item: IItem;
+    item: IItem | IItemGroup;
 }
 
 export default function ItemCard({ item }: ItemCardProps) {
