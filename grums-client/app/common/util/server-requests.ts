@@ -54,7 +54,7 @@ export const get = async (path: string) => {
     return data;
 };
 
-export const getById = async (path: string, id: string) => {
+export const getById = async (path: string) => {
     const headers = await getHeaders();
     const BASE_URL = process.env.API_URL;
     const res = await fetch(`${BASE_URL}/${path.replace(/^\//, '')}`, { headers });

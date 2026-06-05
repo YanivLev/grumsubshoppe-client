@@ -5,10 +5,10 @@ import {getById} from "@/app/common/util/server-requests";
 
 export default async function getItemGroupById(itemGroupId: string) : Promise<IItemGroup> {
     try {
-    const data = await getById(`clover/inventory/item-groups/${itemGroupId}`, itemGroupId);
-    return data;
+        const data = await getById(`clover/inventory/item-groups/${itemGroupId}`);
+        return data;
     } catch (error) {
-    console.error("Fetch Error:", error);
-    throw error;
+        console.error("Fetch Error:", error);
+        throw error;
     }
 }
