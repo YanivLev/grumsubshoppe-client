@@ -10,6 +10,7 @@ interface ICartModifier {
     isLight: boolean;
     isReplacement: boolean;
     replacedName?: string;
+    isSizeMod?: boolean;
 }
 
 export interface ICartItem {
@@ -37,18 +38,13 @@ interface ICartStore {
     clearCart: () => void;
     hasHydrated: boolean;
     setHasHydrated: (state: boolean) => void;
-  }
-
-  function generateId(): string {
+}
+ 
+function generateId(){
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
+      return String(crypto.randomUUID());
     }
-    return 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
+}
 
 export const useCartStore = create<ICartStore>() (
     persist(
@@ -74,7 +70,6 @@ export const useCartStore = create<ICartStore>() (
                 );
             });
 
-
             if (match) {
                 const newQuantity = match.quantity + item.quantity;
                 return {
@@ -85,9 +80,8 @@ export const useCartStore = create<ICartStore>() (
                 ),
                 };
             }
-
             return {
-                items: [...state.items, { ...item, cartItemId: generateId() }],
+                items: [...state.items, { ...item, cartItemId: String(generateId()) }],
             };
             }),
         removeItem: (cartItemId) =>

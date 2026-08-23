@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 interface ICartItemProps {
     cartItemId: string;
     name: string;
-    modifiers: {id: string, name: string, price: number, isDefault: boolean, isExtra: boolean, isLight: boolean, isReplacement: boolean, replacedName?: string}[];
+    modifiers: {id: string, name: string, price: number, isDefault: boolean, isExtra: boolean, isLight: boolean, isReplacement: boolean, replacedName?: string, isSizeMod?: boolean}[];
     quantity: number;
     totalPrice: number;
     itemPath: string;
@@ -45,9 +45,9 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                 </div>
             </div>
 
-            {modifiers.length > 0 && (
+            {modifiers.filter(m => !m.isSizeMod).length > 0 && (
                 <ul className="text-sm text-gray-500 space-y-0.5">
-                    {(expanded ? modifiers : modifiers.slice(0, 3)).map((mod) => (
+                    {(expanded ? modifiers.filter(m => !m.isSizeMod) : modifiers.filter(m => !m.isSizeMod).slice(0, 3)).map((mod) => (
                     <li key={mod.id}>
                         {mod.isExtra && mod.isReplacement ? `Extra ${mod.name} instead of ${mod.replacedName}`
                         : mod.isLight && mod.isReplacement ? `Light ${mod.name} instead of ${mod.replacedName}`
@@ -59,13 +59,13 @@ export default function CartItem({ cartItemId, name, modifiers, quantity, totalP
                         }
                     </li>
                     ))}
-                    {modifiers.length > 3 && (
+                    {modifiers.filter(m => !m.isSizeMod).length > 3 && (
                     <li>
                         <button
                         onClick={() => setExpanded(v => !v)}
                         className="text-green-600 hover:underline font-bold cursor-pointer text-sm"
                         >
-                        {expanded ? 'Show less' : `+${modifiers.length - 3} more`}
+                        {expanded ? 'Show less' : `+${modifiers.filter(m => !m.isSizeMod).length - 3} more`}
                         </button>
                     </li>
                     )}

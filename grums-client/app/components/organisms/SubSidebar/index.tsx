@@ -1,6 +1,7 @@
 'use client';
 
 import { IItem } from '@/app/common/interfaces/item.interface';
+import { IItemGroup } from '@/app/common/interfaces/item-group.interface';
 import { IModifier } from '@/app/common/interfaces/modifier.interface';
 import ModifierLineItem from '@/app/components/molecules/ModifierLineItem';
 import SpecialInstructionsInput from '@/app/components/molecules/SpecialInstructions';
@@ -9,7 +10,7 @@ import QuantitySelector from '@/app/components/molecules/QuantitySelector';
 interface Replacement { addedId: string; removedId: string; }
 
 interface SubSidebarProps {
-  activeItem: IItem | null;
+  activeItem: IItemGroup | IItem | null;
   displayName?: string;
   displayPrice?: number | null;
   quantity: number;

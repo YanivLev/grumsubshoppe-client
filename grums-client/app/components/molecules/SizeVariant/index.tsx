@@ -1,6 +1,4 @@
-"use client"
-
-import RequiredLabel from "@/app/components/atoms/RequiredLabel";
+import RequiredLabel from "../../atoms/RequiredLabel";
 import { IItem } from "@/app/common/interfaces/item.interface";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
@@ -10,9 +8,9 @@ interface SizeVariantProps {
     onSelect: (item: IItem) => void;
 }
 
-export default function SizeVariant({ variations, selectedItemId, onSelect }: SizeVariantProps) {
+export default function SizeVariant({variations, selectedItemId, onSelect}: SizeVariantProps) {
     return (
-      <div className="w-full max-w-md mb-8">
+        <div className="w-full max-w-md mb-8">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xl font-semibold">Size</span>
           <RequiredLabel/>

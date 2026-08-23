@@ -9,11 +9,14 @@ import { useCartStore } from '@/app/store/cart.store';
 import ModifierGroupSkeleton from '@/app/components/molecules/ModifierGroupSkeleton';
 import { useRouter } from 'next/navigation';
 import SubSidebar from '../SubSidebar';
+import { IItemGroup } from '@/app/common/interfaces/item-group.interface';
+import SizeVariant from '@/app/components/molecules/SizeVariant';
 
-export default function SubCustomizer({ item, modifierGroups, itemPath, editCartItemId }: {
+export default function SubCustomizer({ item, variations, modifierGroups, itemPath, editCartItemId } : {
   item: IItem,
   modifierGroups: IModifierGroup[],
   itemPath: string,
+  variations?: IItem[],
   editCartItemId?: string
 }) {
   const [selectedModifierIds, setSelectedModifierIds] = useState<string[]>([]);
@@ -42,6 +45,8 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
     if (!editCartItemId) return;
     const entry = items.find(i => i.cartItemId === editCartItemId);
     if (!entry) return;
+    const variation = variations?.find(size => size.id === entry.itemId);
+    if (!variation) return;
 
     isEditInit.current = true;
     setQuantity(entry.quantity);
@@ -78,7 +83,7 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
       }
     }
   }
-
+  console.log("Item Type", item);
   function handleExtra(id: string) {
     setLightModifierIds(prev => prev.filter(x => x !== id));
     setExtraModifierIds(prev =>
@@ -92,11 +97,11 @@ export default function SubCustomizer({ item, modifierGroups, itemPath, editCart
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   }
-
+  
   const allModifiers = modifierGroups.flatMap(group => group.modifiers?.elements ?? []);
   const selectedModifiers = allModifiers.filter(mod => selectedModifierIds.includes(mod.id));
   const defaultIds = (DEFAULT_INGREDIENTS[item.id] ?? []).map(d => d.id);
-
+  
   const selectedSizeMod = allModifiers.find(mod => halfWholeIds.includes(mod.id) && selectedModifierIds.includes(mod.id));
   const cartItemName = selectedSizeMod ? `${selectedSizeMod.name} ${item.name}` : item.name;
   const displayPrice = selectedSizeMod != null ? ((item.price ?? 0) + (selectedSizeMod.price ?? 0)) / 100 : null;
